@@ -10,7 +10,7 @@ For example creating a cube from scratch, would be like:
 
 
 List Of Object Types:
-	Oarray	(Array).
+	-Oarray	(Array).
 	Oatomarray	(Atom array object).
 	Oattractor	(Particle attractor).
 	Obackground	(Background).

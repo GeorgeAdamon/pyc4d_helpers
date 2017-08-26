@@ -1,4 +1,4 @@
-List of Cinema4d BaseObject types.
+H1 List of Cinema4d BaseObject types.
 Retrieved from https://developers.maxon.net/docs/Cinema4DPythonSDK/html/types/objects.html
 
 Cinema4D BaseObjects are Initiated in the following way:
@@ -9,7 +9,7 @@ For example creating a cube from scratch, would be like:
 
 
 __List Of Object Types:__
-	..*Oarray	(Array).
+	..Oarray	(Array).
 	Oatomarray	(Atom array object).
 	Oattractor	(Particle attractor).
 	Obackground	(Background).

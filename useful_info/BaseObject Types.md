@@ -1,7 +1,7 @@
 # List of Cinema4d BaseObject types
 
 Retrieved from https://developers.maxon.net/docs/Cinema4DPythonSDK/html/types/objects.html
-
+Valid up to C4D version R18.
 ____
 
 Cinema4D BaseObjects are Initiated in the following way:
@@ -16,26 +16,26 @@ ____
 |BaseObject Type (SDK name) | Common name in C4D GUI|
 |:---: | :---:|
 | 	__Oarray__	 	|	_Array_ 			|
-| 	__Oatomarray__ 		| 	_Atom array object_ 		|
-| 	__Oattractor__ 		|	_Particle attractor_ 		|
+| 	__Oatomarray__ 		| 	_Atom Array_ 			|
+| 	__Oattractor__ 		|	_Particle Attractor_ 		|
 | 	__Obackground__ 	| 	_Background_ 			|
-| 	__Obase__ 		|	_Base object_ 			|
-| 	__Obasedeform__ 	|	_Base deform object_ 		|
-| 	__Obend__ 		|	_Bend deformer_ 		|
+| 	__Obase__ 		|	_Base Object_ 			|
+| 	__Obasedeform__ 	|	_Base Deform Object_ 		|
+| 	__Obend__ 		|	_Bend Deformer_ 		|
 | 	__Obezier__		|	_Bezier Subdivision Surface_	|
-	Oboole	(Boolean).
-	Obulge	(Bulge deformer).
-	Ocamera	(Camera).
-	Ocapsule	(Capsule object).
-	Ocharacter	(Character object).
-	Ocmotion	(CMotion object).
-	Ocone	(Cone object).
-	Oconnector	(Connector object).
-	Ocube	(Cube object).
-	Ocylinder	(Cylinder object).
-	Odeflector	(Particle deflector).
-	Odestructor	(Particle destructor).
-	Odisc	(Disc object).
+|	__Oboole__		|	_Boolean_			|
+|	__Obulge__		|	_Bulge Deformer_		|
+|	__Ocamera__		|	_Camera_			|
+|	__Ocapsule__		|	_Capsule Object_		|
+|	__Ocharacter__		|	_Character Object_		|
+|	__Ocmotion__		|	_CMotion Object_		|
+|	__Ocone__		|	_Cone Object_			|
+|	__Oconnector__		|	_Connector Object_		|
+|	__Ocube__		|	_Cube Object_			|
+|	__Ocylinder__		|	_Cylinder Object_		|
+|	__Odeflector__		|	_Particle Deflector_		|
+|	__Odestructor__		|	_Particle Destructor_		|
+|	__Odisc__		|	_Disc Object_			|
 	Oenvironment	(Environment).
 	Oexplosion	(Explosion deformer).
 	Oexplosionfx	(Explosion FX object).

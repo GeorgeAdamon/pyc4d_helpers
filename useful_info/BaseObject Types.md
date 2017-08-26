@@ -1,4 +1,4 @@
-# List of Cinema4d BaseObject types.
+# List of Cinema4d BaseObject types
 
 Retrieved from https://developers.maxon.net/docs/Cinema4DPythonSDK/html/types/objects.html
 
@@ -11,18 +11,18 @@ For example creating a cube from scratch, would be like:
 	`obj = c4d.BaseObject(c4d.Ocube)`
 ____
 
-## List Of Object Types:
+## BaseObject Types
 
 |BaseObject Type (SDK name) | Common name in C4D GUI|
-|--- | ---|
-| __Oarray__	| Array |
-| __Oatomarray__ | Atom array object |
-| __Oattractor__ | Particle attractor|
-| __Obackground__ | Background)|
-	..Obase	(Base object).
-	..Obasedeform	(Base deform object).
-	Obend	(Bend deformer).
-	Obezier	(Bezier Subdivision Surface).
+|:---: | :---:|
+| 	__Oarray__	 	|	_Array_ 			|
+| 	__Oatomarray__ 		| 	_Atom array object_ 		|
+| 	__Oattractor__ 		|	_Particle attractor_ 		|
+| 	__Obackground__ 	| 	_Background_ 			|
+| 	__Obase__ 		|	_Base object_ 			|
+| 	__Obasedeform__ 	|	_Base deform object_ 		|
+| 	__Obend__ 		|	_Bend deformer_ 		|
+| 	__Obezier__		|	_Bezier Subdivision Surface_	|
 	Oboole	(Boolean).
 	Obulge	(Bulge deformer).
 	Ocamera	(Camera).

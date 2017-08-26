@@ -1,4 +1,4 @@
-#H1 List of Cinema4d BaseObject types.
+# List of Cinema4d BaseObject types.
 
 Retrieved from https://developers.maxon.net/docs/Cinema4DPythonSDK/html/types/objects.html
 ---
@@ -9,7 +9,7 @@ For example creating a cube from scratch, would be like:
 	`obj = c4d.BaseObject(c4d.Ocube)`
 ---
 
-#H2 List Of Object Types:
+## List Of Object Types:
 	..Oarray	(Array).
 	..Oatomarray	(Atom array object).
 	..Oattractor	(Particle attractor).

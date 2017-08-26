@@ -13,8 +13,8 @@ ____
 
 ## BaseObject Types
 
-|BaseObject Type (SDK name) | Common name in C4D GUI|
-|:--- | :---:|
+|BaseObject Type (SDK name) 	| Common name in C4D GUI		|
+|:------------------------------| :-----------------------------------: |
 | 	__Oarray__	 	|	_Array_ 			|
 | 	__Oatomarray__ 		| 	_Atom Array_ 			|
 | 	__Oattractor__ 		|	_Particle Attractor_ 		|
@@ -36,87 +36,87 @@ ____
 |	__Odeflector__		|	_Particle Deflector_		|
 |	__Odestructor__		|	_Particle Destructor_		|
 |	__Odisc__		|	_Disc Object_			|
-	Oenvironment	(Environment).
-	Oexplosion	(Explosion deformer).
-	Oexplosionfx	(Explosion FX object).
-	Oextrude	(Extrude Subdivision Surface).
-	Offd	(FFD).
-	Ofigure	(Figure object).
-	Ofloor	(Floor).
-	Oforeground	(Foreground).
-	Oformula	(Formula deformer).
-	Ofractal	(Fractal object).
-	Ofriction	(Particle friction).
-	Ogravitation	(Particle gravitation).
-	Oheadphone	(Headphone).
-	Oinstance	(Instance).
-	Ojoint	(Joint object).
-	Olathe	(Lathe Subdivision Surface).
-	Olight	(Light).
-	Oline	(Line).
-	Oloft	(Loft Subdivision Surface).
-	Oloudspeaker	(Loudspeaker).
-	Omelt	(Melt deformer).
-	Ometaball	(Metaball).
-	Omicrophone	(Microphone).
-	Onull	(Null object).
-	Ooiltank	(Oil-tank object).
-	Oparticle	(Particle emitter).
-	Oparticlemodifier	(Particle modifier).
-	Oplane	(Plane object).
-	Oplatonic	(Platonic object).
-	Oplugin	(Plugin object - pass the plugin ID).
-	Opluginpolygon	(Polygon plugin object).
-	Opoint	(Point object).
-	Opolygon	(Polygon object).
-	Opolyreduction	(Polygon reduction object).
-	Opyramid	(Pyramid object).
-	Orelief	(Relief object).
-	Orotation	(Particle rotation).
-	Osds	(SDS (Subdivision Surface) object).
-	Oselection	(Selection object).
-	Oshatter	(Shatter deformer).
-	Oshear	(Shear deformer).
-	Oshowdisplacement	(Show displacement).
-	Osinglepoly	(Single polygon object).
-	Oskin	(Skin deformer).
-	Osky	(Sky).
-	Osphere	(Sphere object).
-	Ospherify	(Spherify object).
-	Ospline	(Spline object).
-	Ospline4side	(4-sided spline object).
-	Osplinearc	(Arc spline object).
-	Osplinecircle	(Circle spline object).
-	Osplinecissoid	(Cissoid spline object).
-	Osplinecogwheel	(Wheel spline object).
-	Osplinecontour	(Contour spline object).
-	Osplinecycloid	(Cycloid spline object).
-	Osplinedeformer	(Spline deformer object).
-	Osplineflower	(Flower spline object).
-	Osplineformula	(Formula spline object).
-	Osplinehelix	(Helix spline object).
-	Osplinenside	(N-sided spline object).
-	Osplineprimitive	(Spline primitive).
-	Osplineprofile	(Profile spline object).
-	Osplinerail	(Spline rail object).
-	Osplinerectangle	(Rectangle spline object).
-	Osplinestar	(Star spline object).
-	Osplinetext	(Text spline object).
-	Ostage	(Stage).
-	Osweep	(Sweep Subdivision Surface).
-	Osymmetry	(Symmetry object).
-	Otaper	(Taper deformer).
-	Otorus	(Torus object).
-	Otube	(Tube object).
-	Oturbulence	(Particle turbulence).
-	Otwist	(Twist deformer).
-	Owave	(Wave deformer).
-	Oweighteffector	(Weight effector).
-	Owind	(Particle wind).
-	Owinddeform	(Wind deformer).
-	Oworkplane	(Work plane).
-	Owrap	(Wrap deformer).
-	Oxref	(XRef object).
-	Obaseeffector	(Base effector object).
-	Obasemogen	(Base mogen object).
-	Omotiontracker	(Motion tracker object).
+|	__Oenvironment__	|	_Environment_			|
+|	__Oexplosion__		|	_Explosion deformer_		|
+|	__Oexplosionfx__	|	_Explosion FX object_		|
+|	__Oextrude__		|	_Extrude Subdivision Surface_	|
+|	__Offd__		|	_FFD_				|
+|	__Ofigure__		|	_Figure object_			|
+|	__Ofloor__		|	_Floor_				|
+|	__Oforeground__		|	_Foreground_			|
+|	__Oformula__		|	_Formula deformer_		|
+|	__Ofractal__		|	_Fractal object_		|
+|	__Ofriction__		|	_Particle friction_		|
+|	__Ogravitation__	|	_Particle gravitation_		|
+|	__Oheadphone__		|	_Headphone_			|
+|	__Oinstance__		|	_Instance_			|
+|	__Ojoint__		|	_Joint object_			|
+|	__Olathe__		|	_Lathe Subdivision Surface_	|
+|	__Olight__		|	_Light_				|
+|	__Oline__		|	_Line_				|
+|	Oloft	(Loft Subdivision Surface).
+|	Oloudspeaker	(Loudspeaker).
+|	Omelt	(Melt deformer).
+|	Ometaball	(Metaball).
+|	Omicrophone	(Microphone).
+|	Onull	(Null object).
+|	Ooiltank	(Oil-tank object).
+|	Oparticle	(Particle emitter).
+|	Oparticlemodifier	(Particle modifier).
+|	Oplane	(Plane object).
+|	Oplatonic	(Platonic object).
+|	Oplugin	(Plugin object - pass the plugin ID).
+|	Opluginpolygon	(Polygon plugin object).
+|	Opoint	(Point object).
+|	Opolygon	(Polygon object).
+|	Opolyreduction	(Polygon reduction object).
+|	Opyramid	(Pyramid object).
+|	Orelief	(Relief object).
+|	Orotation	(Particle rotation).
+|	Osds	(SDS (Subdivision Surface) object).
+|	Oselection	(Selection object).
+|	Oshatter	(Shatter deformer).
+|	Oshear	(Shear deformer).
+|	Oshowdisplacement	(Show displacement).
+|	Osinglepoly	(Single polygon object).
+|	Oskin	(Skin deformer).
+|	Osky	(Sky).
+|	Osphere	(Sphere object).
+|	Ospherify	(Spherify object).
+|	Ospline	(Spline object).
+|	Ospline4side	(4-sided spline object).
+|	Osplinearc	(Arc spline object).
+|	Osplinecircle	(Circle spline object).
+|	Osplinecissoid	(Cissoid spline object).
+|	Osplinecogwheel	(Wheel spline object).
+|	Osplinecontour	(Contour spline object).
+|	Osplinecycloid	(Cycloid spline object).
+|	Osplinedeformer	(Spline deformer object).
+|	Osplineflower	(Flower spline object).
+|	Osplineformula	(Formula spline object).
+|	Osplinehelix	(Helix spline object).
+|	Osplinenside	(N-sided spline object).
+|	Osplineprimitive	(Spline primitive).
+|	Osplineprofile	(Profile spline object).
+|	Osplinerail	(Spline rail object).
+|	Osplinerectangle	(Rectangle spline object).
+|	Osplinestar	(Star spline object).
+|	Osplinetext	(Text spline object).
+|	Ostage	(Stage).
+|	Osweep	(Sweep Subdivision Surface).
+|	Osymmetry	(Symmetry object).
+|	Otaper	(Taper deformer).
+|	Otorus	(Torus object).
+|	Otube	(Tube object).
+|	Oturbulence	(Particle turbulence).
+|	Otwist	(Twist deformer).
+|	Owave	(Wave deformer).
+|	Oweighteffector	(Weight effector).
+|	Owind	(Particle wind).
+|	Owinddeform	(Wind deformer).
+|	Oworkplane	(Work plane).
+|	Owrap	(Wrap deformer).
+|	Oxref	(XRef object).
+|	Obaseeffector	(Base effector object).
+|	Obasemogen	(Base mogen object).
+|	Omotiontracker	(Motion tracker object).

@@ -14,7 +14,7 @@ ____
 ## BaseObject Types
 
 |BaseObject Type (SDK name) | Common name in C4D GUI|
-|:---: | :---:|
+|:--- | :---:|
 | 	__Oarray__	 	|	_Array_ 			|
 | 	__Oatomarray__ 		| 	_Atom Array_ 			|
 | 	__Oattractor__ 		|	_Particle Attractor_ 		|

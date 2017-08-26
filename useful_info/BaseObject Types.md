@@ -12,9 +12,10 @@ For example creating a cube from scratch, would be like:
 ---
 
 ## List Of Object Types:
-BaseObject Type (SDK name) | Common name in C4D GUI
---- | ---
-__Oarray__	| Array 
+
+|BaseObject Type (SDK name) | Common name in C4D GUI|
+|--- | ---|
+|__Oarray__	| Array |
 __Oatomarray__ | Atom array object 
 	..Oattractor	(Particle attractor).
 	..Obackground	(Background).

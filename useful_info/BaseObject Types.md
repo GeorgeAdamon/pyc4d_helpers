@@ -1,12 +1,11 @@
 List of Cinema4d BaseObject types.
 Retrieved from https://developers.maxon.net/docs/Cinema4DPythonSDK/html/types/objects.html
 
-
 Cinema4D BaseObjects are Initiated in the following way:
 	new_object = c4d.BaseObject ( object_type )
 
 For example creating a cube from scratch, would be like:
-	obj = c4d.BaseObject(c4d.Ocube)
+	`obj = c4d.BaseObject(c4d.Ocube)`
 
 
 List Of Object Types:

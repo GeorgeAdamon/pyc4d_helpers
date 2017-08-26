@@ -10,13 +10,9 @@ For example creating a cube from scratch, would be like:
 
 
 List Of Object Types:
-<<<<<<< HEAD:useful_info/BaseObject Types
+
 	Oarray	(Array).
 	Oatomarray	(Atom array object).
-=======
-	-Oarray	(Array).
-	-Oatomarray	(Atom array object).
->>>>>>> 4bf1a996509ee20ae911889a76a34b01d89c997e:useful_info/BaseObject Types.txt
 	Oattractor	(Particle attractor).
 	Obackground	(Background).
 	Obase	(Base object).

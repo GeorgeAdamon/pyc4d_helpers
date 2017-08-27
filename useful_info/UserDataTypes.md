@@ -6,9 +6,9 @@ ___
 ## UserData types
 | SDK name | Common UserData name in C4D GUI |
 |-----------| :---------: |
-| DTYPE_BASELISTLINK | BaseList2D |
-DTYPE_BOOL	(bool).
-DTYPE_BUTTON	(Button).
+ __DTYPE_BASELISTLINK__ | _BaseList2D_ |
+ __DTYPE_BOOL__	| _bool_ |
+__DTYPE_BUTTON__	| _Button_
 DTYPE_CHILDREN	(Children).
 DTYPE_COLOR	(Color).
 DTYPE_DYNAMIC	(GV dynamic).

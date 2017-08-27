@@ -1,4 +1,11 @@
+# List of Tag Types
+Retrieved from https://developers.maxon.net/docs/Cinema4DPythonSDK/html/types/tags.html?highlight=tag%20types
+___
 
+## Tag Types
+
+| SDK name | Common name in C4D GUI|
+|----|----|
 Taligntopath	Align to path tag.
 Taligntospline	Align to spline tag.
 Tarchigrass	Architectural grass tag.

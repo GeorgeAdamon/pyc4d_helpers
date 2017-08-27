@@ -61,7 +61,6 @@ ____
 |	__Osplinenside__	|	_N-sided spline object_
 |	__Osplineprimitive__	|	_Spline primitive_
 |	__Osplineprofile__	|	_Profile spline object_
-|	__Osplinerail__		|	_Spline rail object_
 |	__Osplinerectangle__	|	_Rectangle spline object_
 |	__Osplinestar__		|	_Star spline object_
 |	__Osplinetext__		|	_Text spline object_
@@ -99,6 +98,7 @@ ____
 |	__Oskin__		|	_Skin deformer_
 |	__Ospherify__		|	_Spherify object_
 |	__Osplinedeformer__	|	_Spline deformer object_
+|	__Osplinerail__		|	_Spline rail object_
 |	__Otaper__		|	_Taper deformer_
 |	__Otwist__		|	_Twist deformer_
 |	__Owave__		|	_Wave deformer_

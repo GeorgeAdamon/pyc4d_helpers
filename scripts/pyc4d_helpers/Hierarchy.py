@@ -1,4 +1,8 @@
 import c4d
+import c4d.documents as docs
+
+global DOC
+DOC = docs.GetActiveDocument()
 
 def SelectObject(obj):
     obj.SetBit(c4d.BIT_ACTIVE)
@@ -10,30 +14,32 @@ def DeselectObject(obj):
 
 def SelectChildren(obj, recursive = True, deselect_parent = True):
     if recursive:
-        doc.StartUndo()
+        DOC.StartUndo()
         SelectChildren_RecursionHelper(obj,obj.GetNext())
 
         if deselect_parent:
             DeselectObject(obj)
-            doc.EndUndo()
+            DOC.EndUndo()
     else:
-        doc.StartUndo()
+        DOC.StartUndo()
         SelectChildren_Helper(obj,obj.GetNext())
 
         if deselect_parent:
             DeselectObject(obj)
+        else:
+            SelectObject(obj)
 
-        doc.EndUndo()
+        DOC.EndUndo()
     return
 
 def SelectChildren_RecursionHelper(obj, next):
     while obj and obj != next: #while we are not in the end of this object's hierarchy
 
-        doc.AddUndo(c4d.UNDOTYPE_CHANGE_SMALL,obj)  
+        DOC.AddUndo(c4d.UNDOTYPE_CHANGE_SMALL,obj)  
 
         SelectObject(obj) #select the current object
 
-        SelectChildrenHelper(obj.GetDown(),next)  #Call this same function on the first child of the current object, if it exists. This initiates a recursive chain reaction, until we reach the end of this object's hierarchy
+        SelectChildren_RecursionHelper(obj.GetDown(),next)  #Call this same function on the first child of the current object, if it exists. This initiates a recursive chain reaction, until we reach the end of this object's hierarchy
 
         obj = obj.GetNext()  #Get the next object in the hierarchy
 
@@ -46,7 +52,7 @@ def SelectChildren_Helper(obj, next):
 
     while obj2 and obj2 != next: #while we are not in the end of this object's hierarchy
 
-        doc.AddUndo(c4d.UNDOTYPE_CHANGE_SMALL,obj2)
+        DOC.AddUndo(c4d.UNDOTYPE_CHANGE_SMALL,obj2)
 
         SelectObject(obj2) #select the current object
 

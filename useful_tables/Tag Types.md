@@ -6,55 +6,55 @@ ___
 
 | SDK name | Common name in C4D GUI|
 |----|----|
-Taligntopath |	Align to path tag.
-Taligntospline	|Align to spline tag.
-Tarchigrass	|Architectural grass tag.
-Tbakeparticle |	Bake particle tag.
-Tbaketexture	 |Bake texture tag.
-Tbase	|Base tag. (BaseTag)
-Tcoffeeexpression	| C.O.F.F.E.E. expression tag.
-Tcompositing |	Compositing/render tag.
-Tcorner	| Corner tag. (Phong break.)
-Tcrane	| Camera crane tag.
-Tdisplay |	Display tag.
-Tedgeselection	| Edge selection tag. The edges are encoded like this: (4 x poly)+edge, where edge goes from 0-3.
-Texpresso |	XPresso tag.
-Tinteraction	|Interaction tag.
-Tline |	Line tag.
-Tlookatcamera	| Look at camera tag.
-Tmetaball |	Metaball tag.
-Tmorphcam	| Morph camera tag.
-Tmotionblur	| Motion blur tag.
-Tmotioncam	| Motion camera tag.
-Tnormal |	Normal tag. (NormalTag) Note: Contains 12 int per polygon, enumerated like the following: ax,ay,az,bx,by,bz,cx,cy,cz,dx,dy,dz. The value is the Real value of the normal vector component multiplied by 32000.0
-Tparticle	| Particle tag.
-Tphong	 | Phong tag.
-Tplugin	| Plugin tag. Pass the plugin ID.
-Tpoint	| Point tag.
-Tpointselection	| Point selection tag. (SelectionTag)
-Tpolygon	| Polygon tag.
-Tpolygonselection	| Polygon selection tag. (SelectionTag)
-Tposemorph	 | Pose Morph tag.
-Tprotection	| Protection tag.
-Tpython	| Python expression tag.
-Trestriction	| Restriction tag.
-Tsavetemp	| Internal tag.
-Tsculpt	| Sculpt tag.
-Tsds	| SDS tag.
-Tsdsdata	| SDS data tag.
-Tsegment	| Segment tag. (SegmentTag)
-Tsoftselection	| Soft selection tag.
-Tsplinenormal	| Spline normals tag.
-Tsticktexture	| Stick texture tag.
-Tstop	| Stop tag.
-Tsunexpression	| Sun expression tag.
-Ttangent	 | Tangent tag. (TangentTag)
-Ttargetexpression	| Target expression tag.
-Ttexture	| Texture tag. (TextureTag)
-Tuvw	| UVW tag. (UVWTag)
-Tvariable	|Variable tag. (VariableTag)
-Tvertexmap	|Vertex map tag.
-Tvibrate	|Vibration tag.
-Tweights	|Weights tag.
-Tmgselection	|MoGraph selection tag.
-Tmgweight	|MoGraph weights tag. Since R18.011
+__Taligntopath__ |	Align to path tag.
+__Taligntospline__	|Align to spline tag.
+__Tarchigrass__	|Architectural grass tag.
+__Tbakeparticle__ |	Bake particle tag.
+__Tbaketexture__	 |Bake texture tag.
+__Tbase__	|Base tag. (BaseTag)
+__Tcoffeeexpression__	| C.O.F.F.E.E. expression tag.
+__Tcompositing__ |	Compositing/render tag.
+__Tcorner__	| Corner tag. (Phong break.)
+__Tcrane__	| Camera crane tag.
+__Tdisplay__ |	Display tag.
+__Tedgeselection__	| Edge selection tag. The edges are encoded like this: (4 x poly)+edge, where edge goes from 0-3.
+__Texpresso__ |	XPresso tag.
+__Tinteraction__	|Interaction tag.
+__Tline__ |	Line tag.
+__Tlookatcamera__	| Look at camera tag.
+__Tmetaball__ |	Metaball tag.
+__Tmorphcam__	| Morph camera tag.
+__Tmotionblur__	| Motion blur tag.
+__Tmotioncam__	| Motion camera tag.
+__Tnormal__ |	Normal tag. (NormalTag) Note: Contains 12 int per polygon, enumerated like the following: ax,ay,az,bx,by,bz,cx,cy,cz,dx,dy,dz. The value is the Real value of the normal vector component multiplied by 32000.0
+__Tparticle__	| Particle tag.
+__Tphong__	 | Phong tag.
+__Tplugin__	| Plugin tag. Pass the plugin ID.
+__Tpoint__	| Point tag.
+__Tpointselection__	| Point selection tag. (SelectionTag)
+__Tpolygon__	| Polygon tag.
+__Tpolygonselection__	| Polygon selection tag. (SelectionTag)
+__Tposemorph__	 | Pose Morph tag.
+__Tprotection__ | Protection tag.
+__Tpython__	| Python expression tag.
+__Trestriction__	| Restriction tag.
+__Tsavetemp__	| Internal tag.
+__Tsculpt__	| Sculpt tag.
+__Tsds__	| SDS tag.
+__Tsdsdata__	| SDS data tag.
+__Tsegment__	| Segment tag. (SegmentTag)
+__Tsoftselection__	| Soft selection tag.
+__Tsplinenormal__	| Spline normals tag.
+__Tsticktexture__	| Stick texture tag.
+__Tstop__	| Stop tag.
+__Tsunexpression__	| Sun expression tag.
+__Ttangent__	 | Tangent tag. (TangentTag)
+__Ttargetexpression__	| Target expression tag.
+__Ttexture__	| Texture tag. (TextureTag)
+__Tuvw__	| UVW tag. (UVWTag)
+__Tvariable__	|Variable tag. (VariableTag)
+__Tvertexmap__	|Vertex map tag.
+__Tvibrate__	|Vibration tag.
+__Tweights__	|Weights tag.
+__Tmgselection__	|MoGraph selection tag.
+__Tmgweight__	|MoGraph weights tag. Since R18.011

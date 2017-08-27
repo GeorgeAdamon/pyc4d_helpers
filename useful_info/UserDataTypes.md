@@ -1,7 +1,7 @@
-# List of all the possible datatypes of Cinema4D UserData.
+# List of all the possible datatypes of Cinema4D UserData
 Retrieved from https://developers.maxon.net/docs/Cinema4DPythonSDK/html/modules/c4d/index.html#c4d.GetCustomDataTypeDefault
 
-Usage example (boolean UserData creation):
+Usage example (Boolean UserData creation):
 
     BaseContainer = c4d.GetCustomDatatypeDefault(c4d.DTYPE_BOOL) #Set the UserData type
     BaseContainer[c4d.DESC_NAME] = MyBoolData #Set the UserData name

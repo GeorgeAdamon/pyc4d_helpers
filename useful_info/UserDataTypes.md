@@ -1,8 +1,12 @@
-List of all the possible datatypes of Cinema4D UserData.
+# List of all the possible datatypes of Cinema4D UserData.
 Retrieved from https://developers.maxon.net/docs/Cinema4DPythonSDK/html/modules/c4d/index.html#c4d.GetCustomDataTypeDefault
 
+___
 
-DTYPE_BASELISTLINK	(BaseList2D).
+## UserData types
+| SDK name | Common UserData name in C4D GUI |
+|-----------| :---------: |
+| DTYPE_BASELISTLINK | BaseList2D |
 DTYPE_BOOL	(bool).
 DTYPE_BUTTON	(Button).
 DTYPE_CHILDREN	(Children).

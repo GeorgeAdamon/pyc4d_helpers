@@ -128,6 +128,12 @@ def CreateUserData (obj, itemName, itemtype, overwrite=False):
 def CreateFloatData (obj, itemName, itemtype=c4d.CUSTOMGUI_REAL, _min=0.0, _max = 100.0, step=1,  units=c4d.DESC_UNIT_FLOAT, overwrite= False):
     if obj==None: return False
 
+    if isinstance(itemtype,str):
+        itemtype = D.FloatInterface[itemtype]
+    
+    if isinstance(units,str):
+        units = D.FloatUnits[units]
+
     UserData = obj.GetUserDataContainer()
     if itemName == None: itemName = "No Name " + str(len(UserData))
 
@@ -137,7 +143,7 @@ def CreateFloatData (obj, itemName, itemtype=c4d.CUSTOMGUI_REAL, _min=0.0, _max 
         else:
             DestroyUserData(obj,itemName)
 
-    BaseContainer = c4d.GetCustomDatatypeDefault(itemtype)
+    BaseContainer = c4d.GetCustomDatatypeDefault(c4d.DTYPE_REAL)
     BaseContainer[c4d.DESC_NAME] = itemName
     BaseContainer[c4d.DESC_SHORT_NAME] = itemName
 
@@ -145,15 +151,8 @@ def CreateFloatData (obj, itemName, itemtype=c4d.CUSTOMGUI_REAL, _min=0.0, _max 
     BaseContainer[c4d.DESC_MAX] = _max
     BaseContainer[c4d.DESC_STEP] = step
 
-    if isinstance(itemtype,str):
-        BaseContainer[c4d.DESC_CUSTOMGUI] = D.FloatInterface[itemtype]
-    elif isinstance(itemtype,int):
-        BaseContainer[c4d.DESC_CUSTOMGUI] = itemtype
-    
-    if isinstance(units,str):
-        BaseContainer[c4d.DESC_UNIT] = D.FloatUnits[units]
-    elif isinstance(type,int):
-        BaseContainer[c4d.DESC_UNIT] = units
+    BaseContainer[c4d.DESC_CUSTOMGUI] = itemtype
+    BaseContainer[c4d.DESC_UNIT] = units
 
 
     item = obj.AddUserData(BaseContainer)

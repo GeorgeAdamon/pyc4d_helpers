@@ -1,3 +1,4 @@
+import pyc4d_helpers.Dictionaries as D
 import c4d
 
 def UserDataExists(obj, itemName):
@@ -124,6 +125,41 @@ def CreateUserData (obj, itemName, itemtype, overwrite=False):
 
     return True
 
+def CreateFloatData (obj, itemName, itemtype=c4d.CUSTOMGUI_REAL, _min=0.0, _max = 100.0, step=1,  units=c4d.DESC_UNIT_FLOAT, overwrite= False):
+    if obj==None: return False
+
+    UserData = obj.GetUserDataContainer()
+    if itemName == None: itemName = "No Name " + str(len(UserData))
+
+    if UserDataExists(obj,itemName):
+        if overwrite==False: 
+            return False
+        else:
+            DestroyUserData(obj,itemName)
+
+    BaseContainer = c4d.GetCustomDatatypeDefault(itemtype)
+    BaseContainer[c4d.DESC_NAME] = itemName
+    BaseContainer[c4d.DESC_SHORT_NAME] = itemName
+
+    BaseContainer[c4d.DESC_MIN] = _min
+    BaseContainer[c4d.DESC_MAX] = _max
+    BaseContainer[c4d.DESC_STEP] = step
+
+    if isinstance(itemtype,str):
+        BaseContainer[c4d.DESC_CUSTOMGUI] = D.FloatInterface[itemtype]
+    elif isinstance(itemtype,int):
+        BaseContainer[c4d.DESC_CUSTOMGUI] = itemtype
+    
+    if isinstance(units,str):
+        BaseContainer[c4d.DESC_UNIT] = D.FloatUnits[units]
+    elif isinstance(type,int):
+        BaseContainer[c4d.DESC_UNIT] = units
+
+
+    item = obj.AddUserData(BaseContainer)
+    c4d.EventAdd()
+
+    return True
 
 def SetUserData (obj, itemName, value):
     """ 

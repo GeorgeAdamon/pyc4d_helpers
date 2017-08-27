@@ -5,7 +5,7 @@ Valid up to C4D version R18.
 ____
 
 Cinema4D BaseObjects are Initiated in the following way:
-	```new_object = __c4d.BaseObject ( object_type )__```
+	```new_object = c4d.BaseObject ( object_type )```
 
 For example creating a cube from scratch, would be like:
 	`obj = c4d.BaseObject(c4d.Ocube)`
@@ -66,6 +66,7 @@ ____
 |	__Osplinetext__		|	_Text spline object_
 
 ### Generator Objects
+|BaseObject Type (SDK name) 	| Common name in C4D GUI		|
 |:------------------------------| :-----------------------------------: |
 | 	__Oarray__	 	|	_Array_ 			
 | 	__Oatomarray__ 		| 	_Atom Array_ 		
@@ -75,6 +76,8 @@ ____
 |	__Osymmetry__		|	_Symmetry object_
 
 ### Subdivision Surface Objects
+|BaseObject Type (SDK name) 	| Common name in C4D GUI		|
+|:------------------------------| :-----------------------------------: |
 | 	__Obezier__		|	_Bezier Subdivision Surface_
 |	__Oextrude__		|	_Extrude Subdivision Surface_	
 |	__Olathe__		|	_Lathe Subdivision Surface_	

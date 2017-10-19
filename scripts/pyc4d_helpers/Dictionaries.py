@@ -12,3 +12,10 @@ FloatUnits = {
 "Degrees": c4d.DESC_UNIT_DEGREE,
 "Meters": c4d.DESC_UNIT_METER
 }
+
+IntegerInterface = {
+"Cycle":c4d.CUSTOMGUI_CYCLE,
+"Cycle Button": c4d.CUSTOMGUI_CYCLEBUTTON,
+"Integer":c4d.CUSTOMGUI_LONG,
+"Integer Slider": c4d.CUSTOMGUI_LONGSLIDER
+}

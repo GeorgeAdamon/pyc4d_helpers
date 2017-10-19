@@ -39,17 +39,17 @@ def FindUserData (obj, itemName):
      """
     if obj==None: return
     UserData = obj.GetUserDataContainer()
-    
+
     if UserData:
         for ud in UserData:
             if ud[1][c4d.DESC_NAME] == itemName:
-                return obj[ud[0]] #The actual object contained in the UserData item
-            else:
-                return None
-    else:
-        return None
+                return ud #The actual object contained in the UserData item
+    return None
 
-
+def GetUserDataValue (obj, itemName):
+    ud = FindUserData(obj,itemName)
+    return obj[ud[0]]
+ 
 def DestroyUserData(obj, itemName):
 
     if obj==None: return False
@@ -59,12 +59,11 @@ def DestroyUserData(obj, itemName):
         for ud in UserData:
             if ud[1][c4d.DESC_NAME] == itemName:
                 obj.RemoveUserData(ud[0]) #The actual object contained in the UserData item
-                c4d.EventAdd()
+                #c4d.EventAdd()
 
                 return True
                 
     return False
-
 
 def CreateUserData (obj, itemName, itemtype, overwrite=False):
 
@@ -101,7 +100,7 @@ def CreateUserData (obj, itemName, itemtype, overwrite=False):
     Returns:
         True on success, False on failure
      """
-    if obj==None: return False
+    if obj==None: return
     if itemtype==None: itemtype = c4d.NONE
     
     UserData = obj.GetUserDataContainer()
@@ -109,7 +108,7 @@ def CreateUserData (obj, itemName, itemtype, overwrite=False):
 
     if UserDataExists(obj,itemName):
         if overwrite==False: 
-            return False
+            return
         else:
             DestroyUserData(obj,itemName)
 
@@ -120,10 +119,13 @@ def CreateUserData (obj, itemName, itemtype, overwrite=False):
     if itemtype==c4d.DTYPE_BUTTON:
         BaseContainer[c4d.DESC_CUSTOMGUI] =  c4d.CUSTOMGUI_BUTTON
 
-    item = obj.AddUserData(BaseContainer)
-    c4d.EventAdd()
+    if itemtype==c4d.DTYPE_SEPARATOR:
+        BaseContainer[c4d.DESC_CUSTOMGUI] =  c4d.CUSTOMGUI_SEPARATOR
 
-    return True
+    item = obj.AddUserData(BaseContainer)
+    #c4d.EventAdd()
+
+    return obj[item]
 
 def CreateFloatData (obj, itemName, itemtype=c4d.CUSTOMGUI_REAL, _min=0.0, _max = 100.0, step=1,  units=c4d.DESC_UNIT_FLOAT, overwrite= False):
     if obj==None: return False
@@ -156,7 +158,39 @@ def CreateFloatData (obj, itemName, itemtype=c4d.CUSTOMGUI_REAL, _min=0.0, _max 
 
 
     item = obj.AddUserData(BaseContainer)
-    c4d.EventAdd()
+    #c4d.EventAdd()
+
+    return True
+
+def CreateIntegerData (obj, itemName, itemtype=c4d.CUSTOMGUI_LONG, _min=0, _max = 100, step=1, overwrite= False):
+    if obj==None: return False
+
+    if isinstance(itemtype,str):
+        itemtype = D.IntegerInterface[itemtype]
+     
+    UserData = obj.GetUserDataContainer()
+
+    if itemName == None: itemName = "No Name " + str(len(UserData))
+
+    if UserDataExists(obj,itemName):
+        if overwrite==False: 
+            return False
+        else:
+            DestroyUserData(obj,itemName)
+
+    BaseContainer = c4d.GetCustomDatatypeDefault(c4d.DTYPE_LONG)
+    BaseContainer[c4d.DESC_NAME] = itemName
+    BaseContainer[c4d.DESC_SHORT_NAME] = itemName
+
+    BaseContainer[c4d.DESC_MIN] = _min
+    BaseContainer[c4d.DESC_MAX] = _max
+    BaseContainer[c4d.DESC_STEP] = step
+
+    BaseContainer[c4d.DESC_CUSTOMGUI] = itemtype
+    BaseContainer[c4d.DESC_UNIT] = c4d.DESC_UNIT_LONG
+
+    item = obj.AddUserData(BaseContainer)
+    #c4d.EventAdd()
 
     return True
 
@@ -180,7 +214,7 @@ def SetUserData (obj, itemName, value):
         for ud in UserData:
             if ud[1][c4d.DESC_NAME] == itemName:
                 obj[ud[0]] = value
-                c4d.EventAdd()
+                #c4d.EventAdd()
                 return True
     return False
 

@@ -33,8 +33,8 @@ def ApplyShader(shader, material, channel=c4d.MATERIAL_COLOR_SHADER):
 	if isinstance(channel,str):
 		channel = D.ShaderChannels[channel]
 
-	mat[channel] = shader
-	mat.InsertShader(shader)
+	material[channel] = shader
+	material.InsertShader(shader)
 	return True
 
 	#mat.Message(c4d.MSG_UPDATE)

@@ -1,55 +1,8 @@
 import pyc4d_helpers.Dictionaries as D
 import c4d
 
-def UserDataExists(obj, itemName):
-    """ 
-    Search the UserData Collection of a Cinema4D object for a single item with the provided name.
-    
-    Args:
-        obj (c4d.BaseObject): The Cinema4D object to examine
-        itemName (str): The name of the UserData to search for
-    
-    Returns:
-        True if an item with the specified name exists,
-        False if an item with the specified name does not exist,
-        None if the object is not valid
-     """
-    if obj==None: return None
-    UserData = obj.GetUserDataContainer()
-    
-    if UserData:
-        for ud in UserData:
-            if ud[1][c4d.DESC_NAME] == itemName:
-                return True
-    return False
 
-def FindUserData (obj, itemName):
-
-    """ 
-    Search the UserData Collection of a Cinema4D object for a single item with the provided name, and retrieve it.
-    
-    Args:
-        obj (c4d.BaseObject): The Cinema4D object to examine
-        itemName (str): The name of the UserData to search for
-    
-    Returns:
-        If an item with the specified name exists, the function returns the value/object contained in that time. 
-        If no item is found it returns None.
-     """
-    if obj==None: return
-    UserData = obj.GetUserDataContainer()
-
-    if UserData:
-        for ud in UserData:
-            if ud[1][c4d.DESC_NAME] == itemName:
-                return ud #The actual object contained in the UserData item
-    return None
-
-
- 
-
-
-# ====================== USER DATA CREATION FUNCTIONS ================================== #
+# ===================== USER DATA CREATION FUNCTIONS ============================================ #
 def CreateUserData (obj, itemName, itemtype, overwrite=False):
 
     """ 
@@ -130,7 +83,7 @@ def CreateFloatData (obj, itemName="Float", interface=c4d.CUSTOMGUI_REAL, _min=0
 
     if obj==None: return False
 
-    if isinstance(interface,str) or isinstance(interface,str):
+    if isinstance(interface,str):
         interface = D.FloatInterface[interface]
     
     if isinstance(units,str):
@@ -241,7 +194,54 @@ def CreateButton (obj, itemName="Buton", overwrite=False):
 
     return True
 
-# ====================== USER DATA VALUE ASSIGNMENT FUNCTIONS ================================== #
+
+# ===================== USER DATA SEARCH FUNCTIONS ============================================== #
+def UserDataExists(obj, itemName):
+    """ 
+    Search the UserData Collection of a Cinema4D object for a single item with the provided name.
+    
+    Args:
+        obj (c4d.BaseObject): The Cinema4D object to examine
+        itemName (str): The name of the UserData to search for
+    
+    Returns:
+        True if an item with the specified name exists,
+        False if an item with the specified name does not exist,
+        None if the object is not valid
+     """
+    if obj==None: return None
+    UserData = obj.GetUserDataContainer()
+    
+    if UserData:
+        for ud in UserData:
+            if ud[1][c4d.DESC_NAME] == itemName:
+                return True
+    return False
+
+def FindUserData (obj, itemName):
+
+    """ 
+    Search the UserData Collection of a Cinema4D object for a single item with the provided name, and retrieve it.
+    
+    Args:
+        obj (c4d.BaseObject): The Cinema4D object to examine
+        itemName (str): The name of the UserData to search for
+    
+    Returns:
+        If an item with the specified name exists, the function returns the value/object contained in that time. 
+        If no item is found it returns None.
+     """
+    if obj==None: return
+    UserData = obj.GetUserDataContainer()
+
+    if UserData:
+        for ud in UserData:
+            if ud[1][c4d.DESC_NAME] == itemName:
+                return ud #The actual object contained in the UserData item
+    return None
+
+
+# ===================== USER DATA VALUE ASSIGNMENT FUNCTIONS ==================================== #
 def GetUserDataValue (obj, itemName):
     ud = FindUserData(obj,itemName)
     return obj[ud[0]]
@@ -276,7 +276,8 @@ def SetUserDataValue (obj, itemName, value):
                 return True
     return False
 
-# ====================== USER DATA DESTRUCTION FUNCTIONS ================================== #
+
+# ===================== USER DATA DESTRUCTION FUNCTIONS ========================================= #
 def DestroyUserData(obj, itemName):
 
     if obj==None: return False

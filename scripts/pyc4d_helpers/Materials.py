@@ -1,32 +1,36 @@
 import c4d
+import pyc4d_helpers.Dictionaries as D
+import pyc4d_helpers.UseData as ud
 
 def CreateShader(shaderType, name="Shader"):
 
 	"""
-	Creates a new C4D Shader.
-	Args:
-		shaderType: The type of the shader. See https://github.com/GeorgeAdamon/pyc4d_helpers/blob/master/useful_tables/Shader%20Types.md
-		[optional] name (str): The name of the Shader.
-	Returns:
+		Creates a new C4D Shader.
+		Args:
+			shaderType: The type of the shader. See https://github.com/GeorgeAdamon/pyc4d_helpers/blob/master/useful_tables/Shader%20Types.md
+			[optional] name (str): The name of the Shader.
+		Returns:
 		The shader if succesful, else None
 	"""
-
 	shader = c4d.BaseList2D(shaderType)
 	shader.SetName(name)
 
 	return shader
 
-def ApplyShader(shader, material, channel):
+def ApplyShader(shader, material, channel=c4d.MATERIAL_COLOR_SHADER):
 
 	"""
 	Applies a C4D shader on the specified channel of a C4D Material
 	Args:
 		shader: The Shader object to apply.
 		material: The Material to apply the Shader to.
-		channel: The Channel of the Material into which to apply the shader
+		channel: The Channel of the Material into which to apply the shader. See https://github.com/GeorgeAdamon/pyc4d_helpers/blob/master/useful_tables/Material%20Shader%20Channels.md
 	Returns:
 		True on success
 	"""
+
+    if isinstance(channel,str):
+        channel = D.ShaderChannels[channel]
 
 	mat[channel] = shd
 	mat.InsertShader(shader)
@@ -52,8 +56,11 @@ def CreateMaterial(name="New Material", active_channels=[c4d.CHANNEL_COLOR]):
 	_mat = c4d.Material()
 	_mat.SetName(name)
 
-	for c in active_channels:
-		_mat.SetChannelState(c,True)
+	for c in D.MaterialChannels.values():
+		if c in active_channels:
+			_mat.SetChannelState(c,True)
+		else:
+			_mat.SetChannelState(c,False)
 
 	return _mat
 
@@ -75,9 +82,16 @@ def ApplyMaterial(obj, material, tagName, overwrite=False):
 	if material==None: return False
 	if tagName==None: return False
 
+	if overwrite == True:
+		tags = obj.GetTags():
+		for t in tags:
+			if t.GetType()== c4d.Ttexture:
+				t.SetMaterial(material)
+				return t
+	
 	_tag = c4d.TextureTag()
     _tag.SetMaterial(material)
     _tag.SetName(tagName)
     obj.InsertTag(_tag)
 
-    return True
+    return _tag

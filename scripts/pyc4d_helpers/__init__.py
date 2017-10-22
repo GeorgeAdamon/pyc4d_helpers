@@ -1,3 +1,3 @@
-from pyc4d_helpers import Hierarchy, UserData
+from pyc4d_helpers import UserData, Dictionaries
 
-__all__ = ['Hierarchy', 'UserData']
+__all__ = ['Hierarchy', 'UserData', 'Dictionaries']

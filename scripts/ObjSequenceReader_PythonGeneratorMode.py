@@ -4,6 +4,7 @@ import re
 import math
 import random
 from pyc4d_helpers import UserData as ud
+from pyc4d_helpers import Materials as hm
 from pyshull import pyshull as hull
 
 minX = 1000000000000.0
@@ -17,7 +18,7 @@ maxZ = 0.0
 #op[c4d.TPYTHON_FRAME] = True
 
 
-shader = c4d.BaseList2D(c4d.Xvertexmap)
+shader = hm.CreateShader(c4d.Xvertexmap, "OBJ Vertex Colors Shader")
 Polygon = c4d.BaseObject(c4d.Opolygon)
 
 ### GENERATOR FUNCTIONS
@@ -59,7 +60,6 @@ def SetupUserData():
     #12
     if not ud.UserDataExists(op,"Mesh Handling Message"):
         ud.CreateUserData(op,"Mesh Handling Message", c4d.DTYPE_STATICTEXT, True)
-
 
 def ResolveFilename(filename):
     """
@@ -277,21 +277,26 @@ def UpdateMaterial():
             break
 
     if not _mat:
-        _mat = c4d.Material()
-        _mat.SetName("OBJ Sequence Material")
-        _mat.SetChannelState(c4d.CHANNEL_COLOR,False)
-        _mat.SetChannelState(c4d.CHANNEL_LUMINANCE,True)
-
+        _mat = hm.CreateMaterial("OBJ Sequence Material", [c4d.CHANNEL_LUMINANCE])
         
-        _mat[c4d.MATERIAL_LUMINANCE_SHADER] = shader
-        _mat.InsertShader(shader)
+        #_mat = c4d.Material()
+        #_mat.SetName("OBJ Sequence Material")
+        #_mat.SetChannelState(c4d.CHANNEL_COLOR,False)
+        #_mat.SetChannelState(c4d.CHANNEL_LUMINANCE,True)
+
+        hm.ApplyShader(_mat, shader, "Luminance")
+        
+        #_mat[c4d.MATERIAL_LUMINANCE_SHADER] = shader
+        #_mat.InsertShader(shader)
+
         doc.InsertMaterial(_mat)
     
     if _tag == None:
-        _tag = c4d.TextureTag()
-        _tag.SetMaterial(_mat)
-        _tag.SetName("OBJ Sequence Texture Tag")
-        Polygon.InsertTag(_tag)
+        _tag = hm.ApplyMaterial(Polygon, _mat, "OBJ Sequence Texture Tag", True)
+        #_tag = c4d.TextureTag()
+        #_tag.SetMaterial(_mat)
+        #_tag.SetName("OBJ Sequence Texture Tag")
+        #Polygon.InsertTag(_tag)
     
     _optags = [t for t in op.GetTags() if t.GetType() == c4d.Ttexture]
     _optag = None

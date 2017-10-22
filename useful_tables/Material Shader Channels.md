@@ -1,13 +1,15 @@
 
 # List of all the available Shader Channels of Cinema4D Materials
-Retrieved through trial and error. Maxon developer webbsite doesn't appear to provide documentation.
+Retrieved from C++ SDK: https://developers.maxon.net/docs/Cinema4DCPPSDK/html/mmaterial_8h.html#ac998c8f2ed6a3c0d0ae07b3822c16f9da4cae70ca3e438d9ac3d210e15d9e8ca7
 
 Usage example (Creating a Material and put a shader into its Shader Channel):
+
   mat = c4d.Material()
   shader = c4d.BaseList2D(c4d.Xcolor)
   
   mat[c4d.MATERIAL_COLOR_SHADER] = shader
   mat.InsertShader(shader)
+
 ___
 
 ## Material Shader Channel types

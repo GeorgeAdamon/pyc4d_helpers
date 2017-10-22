@@ -196,6 +196,9 @@ def CreateButton (obj, itemName="Buton", overwrite=False):
 
 
 # ===================== USER DATA SEARCH FUNCTIONS ============================================== #
+def GetAllUserData(obj):
+    return obj.GetUserDataContainer()
+
 def UserDataExists(obj, itemName):
     """ 
     Search the UserData Collection of a Cinema4D object for a single item with the provided name.
@@ -210,7 +213,7 @@ def UserDataExists(obj, itemName):
         None if the object is not valid
      """
     if obj==None: return None
-    UserData = obj.GetUserDataContainer()
+    UserData = GetAllUserData(obj)
     
     if UserData:
         for ud in UserData:
@@ -232,7 +235,7 @@ def FindUserData (obj, itemName):
         If no item is found it returns None.
      """
     if obj==None: return
-    UserData = obj.GetUserDataContainer()
+    UserData = GetAllUserData(obj)
 
     if UserData:
         for ud in UserData:
@@ -262,7 +265,7 @@ def SetUserDataValue (obj, itemName, value):
 
     if obj==None: return False
     
-    UserData = obj.GetUserDataContainer()
+    UserData = GetAllUserData(obj)
     
     if UserData:
         for ud in UserData:
@@ -282,7 +285,7 @@ def DestroyUserData(obj, itemName):
 
     if obj==None: return False
 
-    UserData = obj.GetUserDataContainer()
+    UserData = GetAllUserData(obj)
     if UserData==None: return False
 
     if UserData:
@@ -295,7 +298,7 @@ def DestroyAllUserData(obj, itemName):
 
     if obj==None: return False
 
-    UserData = obj.GetUserDataContainer()
+    UserData = GetAllUserData(obj)
     if UserData==None: return False
 
     for i,ud in enumerate(UserData):

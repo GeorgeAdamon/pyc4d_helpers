@@ -38,7 +38,7 @@ def SetupUserData():
     #5
     if not ud.UserDataExists(op,"Frame Step"):
         ud.CreateIntegerData(op,"Frame Step", "Integer Slider", 1,100,1)
-        ud.SetUserData(op, "Frame Step", 1)
+        ud.SetUserDataValue(op, "Frame Step", 1)
     #6
     if not ud.UserDataExists(op,"File Handling Message"):
         ud.CreateUserData(op,"File Handling Message", c4d.DTYPE_STATICTEXT, True)
@@ -90,12 +90,12 @@ def ResolveFilename(filename):
 
     if filename == None or filename == "":
         msg = ">>> Empty Filename. Please provide a link to the FIRST item of the sequence you want to import"
-        ud.SetUserData(op,"File Handling Message", msg)
+        ud.SetUserDataValue(op,"File Handling Message", msg)
         return
 
     if os.path.exists(filename) == False:
         msg = ">>> Invalid FileName. Please provide a link to an existing file or folder."
-        ud.SetUserData(op,"File Handling Message", msg)
+        ud.SetUserDataValue(op,"File Handling Message", msg)
         return
     
     if os.path.isfile(filename):
@@ -105,7 +105,7 @@ def ResolveFilename(filename):
         
         if extension != ".obj":
             msg = ">>> Invalid FileType. Please provide an .obj file."
-            ud.SetUserData(op,"File Handling Message", msg)
+            ud.SetUserDataValue(op,"File Handling Message", msg)
             return
 
         parts = filter(None, re.split(r'(\d+)', name)) # Split the digit and non-digit parts of the name
@@ -114,7 +114,7 @@ def ResolveFilename(filename):
             digit = parts[-1]
         else:
             msg = ">>> Invalid Naming Convention. Please make sure that no other characters exist after your file numbering."
-            ud.SetUserData(op,"File Handling Message", msg)
+            ud.SetUserDataValue(op,"File Handling Message", msg)
             return
 
         formatted_frame = str(frame).zfill(len(digit)) # Fill number with zeros if necessary
@@ -127,12 +127,12 @@ def ResolveFilename(filename):
         Path = os.path.join(directory, nonDigitName + formatted_frame + extension )
         
         msg = ">>> File: ' " +  nonDigitName + formatted_frame + extension + " ' succesfully located."
-        ud.SetUserData(op,"File Handling Message", msg)
+        ud.SetUserDataValue(op,"File Handling Message", msg)
         return Path
     
     else:
         msg = ">>> Invalid FileType. Please provide a link to an .obj file, not to a folder."
-        ud.SetUserData(op,"File Handling Message", msg)
+        ud.SetUserDataValue(op,"File Handling Message", msg)
         return
 
 def ParseObj(filename, swapyz=False):
@@ -346,21 +346,21 @@ def ImportToCinema():
             
             if len(Vertices)== 0 and len(Faces)== 0:
                 msg = ">>> Mesh Succesfully Loaded, but has no Vertices, neither Faces. It's OK, though."
-                ud.SetUserData(op,"Mesh Handling Message", msg)
+                ud.SetUserDataValue(op,"Mesh Handling Message", msg)
             elif len(Vertices)== 0:
                 msg = ">>> Mesh Succesfully Loaded, but has no Vertices.  It's OK, though."
-                ud.SetUserData(op,"Mesh Handling Message", msg)
+                ud.SetUserDataValue(op,"Mesh Handling Message", msg)
             elif len(Faces)== 0:
                 msg = ">>> Mesh Succesfully Loaded, but has no Faces.  It's OK, though."
-                ud.SetUserData(op,"Mesh Handling Message", msg)
+                ud.SetUserDataValue(op,"Mesh Handling Message", msg)
             else:
                 msg = ">>> Mesh Succesfully Loaded! It should appear in the Viewport."
-                ud.SetUserData(op,"Mesh Handling Message", msg)
+                ud.SetUserDataValue(op,"Mesh Handling Message", msg)
             
             return Polygon
         else:
             msg = "No Mesh Loaded, because of faulty Filename. Check the File Handling Message above."
-            ud.SetUserData(op,"Mesh Handling Message", msg)
+            ud.SetUserDataValue(op,"Mesh Handling Message", msg)
             return
 
 #prev        = type("", (), {})()     # create a new empty type and instantiate it

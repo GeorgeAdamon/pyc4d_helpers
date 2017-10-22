@@ -4,8 +4,10 @@
 Retrieved from http://developers.maxon.net/docs/Cinema4DPythonSDK/html/consts/CHANNEL.html
 
 Usage example (Creating a Material and disabling its color Channel):
+```python
   mat = c4d.Material()
   mat.SetChannelState(c4d.CHANNEL_COLOR,False)
+```
 ___
 
 ## Material Channel types

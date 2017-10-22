@@ -33,7 +33,7 @@ Polygon = c4d.BaseObject(c4d.Opolygon)
 def SetupUserData():
     #1
     if not ud.UserDataExists(op,"File Handling"):
-        ud.CreateUserData(op,"File Handling", c4d.DTYPE_SEPARATOR, True)
+        ud.CreateUserData(op,"File Handling", c4d.DTYPE_SEPARATOR)
     #2
     if not ud.UserDataExists(op,"First Object FileName"):
         ud.CreateUserData(op,"First Object FileName", c4d.DTYPE_FILENAME, True)
@@ -55,27 +55,46 @@ def SetupUserData():
     if not ud.UserDataExists(op,"After Last Frame"):
         ud.CreateDropDown(op,"After Last Frame", "Cycle", ["Freeze", "Loop", "Ping Pong", "Disappear"])
         ud.SetUserDataValue(op, "After Last Frame", 0)
-    #7
+    #8
     if not ud.UserDataExists(op,"File Handling Message"):
         ud.CreateUserData(op,"File Handling Message", c4d.DTYPE_STATICTEXT, True)
-    #8
-    if not ud.UserDataExists(op,"Mesh Handling"):
-        ud.CreateUserData(op,"Mesh Handling", c4d.DTYPE_SEPARATOR, True)
     #9
-    if not ud.UserDataExists(op,"Swap Y/Z"):
-        ud.CreateUserData(op,"Swap Y/Z", c4d.DTYPE_BOOL, True)
+    if not ud.UserDataExists(op,"Mesh Handling"):
+        ud.CreateUserData(op,"Mesh Handling", c4d.DTYPE_SEPARATOR)
     #10
     if not ud.UserDataExists(op,"Phong Smoothing"):
-        ud.CreateUserData(op,"Phong Smoothing", c4d.DTYPE_BOOL, True)
+        ud.CreateUserData(op,"Phong Smoothing", c4d.DTYPE_BOOL)
     #11
     if not ud.UserDataExists(op,"Import Vertex Colors"):
-        ud.CreateUserData(op,"Import Vertex Colors", c4d.DTYPE_BOOL, True)
+        ud.CreateUserData(op,"Import Vertex Colors", c4d.DTYPE_BOOL)
     #12
     if not ud.UserDataExists(op,"Create Test Material"):
-        ud.CreateUserData(op,"Create Test Material", c4d.DTYPE_BOOL, True)
+        ud.CreateUserData(op,"Create Test Material", c4d.DTYPE_BOOL)
     #13
     if not ud.UserDataExists(op,"Mesh Handling Message"):
         ud.CreateUserData(op,"Mesh Handling Message", c4d.DTYPE_STATICTEXT, True)
+    #14
+    if not ud.UserDataExists(op,"Vertices"):
+        ud.CreateUserData(op,"Vertices", c4d.DTYPE_STATICTEXT, True)
+    #15
+    if not ud.UserDataExists(op,"Colors"):
+        ud.CreateUserData(op,"Colors", c4d.DTYPE_STATICTEXT, True)
+    #16
+    if not ud.UserDataExists(op,"Faces"):
+        ud.CreateUserData(op,"Faces", c4d.DTYPE_STATICTEXT, True)
+    #17
+    if not ud.UserDataExists(op,"Coordinate Handling"):
+        ud.CreateUserData(op,"Coordinate Handling", c4d.DTYPE_SEPARATOR)
+    #18
+    if not ud.UserDataExists(op,"Swap Y/Z"):
+        ud.CreateUserData(op,"Swap Y/Z", c4d.DTYPE_BOOL)
+    #19
+    if not ud.UserDataExists(op,"Flip Z"):
+        ud.CreateUserData(op,"Flip Z", c4d.DTYPE_BOOL)
+    #20
+    if not ud.UserDataExists(op,"Scale"):
+        ud.CreateFloatData(op,"Scale", "Float Slider", 0.0, 1000.0, 0.1)
+        ud.SetUserDataValue(op, "Scale", 1)
 
 # ====================== FILE SYSTEM FUNCTIONS ============================== #
 def GetFiles(directory):
@@ -232,13 +251,14 @@ def ConstructFrame():
         else:
             frame = last - (frame%last)
     elif after == 3:
-        return -1
+        if frame>last or frame<first:
+            return -1
     formatted_frame = str(frame).zfill(digitCount) # Fill number with zeros if necessary
 
     return formatted_frame
 
 # ====================== OBJ PARSING CORE CODE ============================== #
-def ParseObj(filename, swapyz=False):
+def ParseObj(filename, swapyz=False, flipz= False , scale = 1.0):
     """
     Loads an OBJ file from disk.
 
@@ -265,8 +285,15 @@ def ParseObj(filename, swapyz=False):
             
         if values[0] == 'v': # VERTICES
             v = map(float, values[1:4])
+            
             if swapyz:
                 v = v[0], v[2], v[1]
+            
+            if flipz:
+                v = v[0], v[1], -v[2]
+
+            v = scale*v[0], scale*v[1], scale*v[2]
+
             vertices.append(v)
             
             if len(values) == 7: # VERTEX COLORS
@@ -302,8 +329,12 @@ def ImportToCinema():
 
             N = os.path.basename(PATH)
 
-            Vertices, Faces, Colors = ParseObj(PATH, ud.GetUserDataValue(op, "Swap Y/Z")) #LOAD OBJ FILE
+            Vertices, Faces, Colors = ParseObj(PATH, ud.GetUserDataValue(op, "Swap Y/Z"), ud.GetUserDataValue(op, "Flip Z"), ud.GetUserDataValue(op, "Scale") ) #LOAD OBJ FILE
             
+            ud.SetUserDataValue(op, "Vertices", str(len(Vertices)))
+            ud.SetUserDataValue(op, "Colors", str(len(Colors)))
+            ud.SetUserDataValue(op, "Faces", str(len(Faces)))
+
             Polygon = c4d.BaseObject(c4d.Opolygon)
             Polygon.ResizeObject(len(Vertices),len(Faces)) #New number of points, New number of polygons
             Polygon.SetName(N)
@@ -478,7 +509,6 @@ def UpdateMaterial():
     else:
         _optag = _tag.GetClone()
         _optag.SetName("OBJ Sequence Texture Tag")
-
 
 #prev        = type("", (), {})()     # create a new empty type and instantiate it
 #prev.frame  = 0

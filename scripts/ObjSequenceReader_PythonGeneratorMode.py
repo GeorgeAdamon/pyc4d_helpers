@@ -17,6 +17,12 @@ maxZ = 0.0
 
 #op[c4d.TPYTHON_FRAME] = True
 
+runcount = 0
+prev_filename = ""
+
+min_Frame = 10000000000
+max_Frame = 0
+digitCount = 0
 
 shader = hm.CreateShader(c4d.Xvertexmap, "OBJ Vertex Colors Shader")
 Polygon = c4d.BaseObject(c4d.Opolygon)
@@ -31,37 +37,58 @@ def SetupUserData():
         ud.CreateUserData(op,"First Object FileName", c4d.DTYPE_FILENAME, True)
     #3
     if not ud.UserDataExists(op,"First Frame"):
-        ud.CreateIntegerData(op,"First Frame", "Integer", 0,100,1)
+        ud.CreateIntegerData(op,"First Frame", "Integer")
     #4
     if not ud.UserDataExists(op,"Last Frame"):
-        ud.CreateIntegerData(op,"Last Frame", "Integer", 0,100,1)
+        ud.CreateIntegerData(op,"Last Frame", "Integer")
     #5
     if not ud.UserDataExists(op,"Frame Step"):
-        ud.CreateIntegerData(op,"Frame Step", "Integer Slider", 1,100,1)
+        ud.CreateIntegerData(op,"Frame Step", "Integer Slider")
         ud.SetUserDataValue(op, "Frame Step", 1)
     #6
+    if not ud.UserDataExists(op,"Frame Offset"):
+        ud.CreateIntegerData(op,"Frame Offset", "Integer Slider")
+        ud.SetUserDataValue(op, "Frame Offset", 0)
+    #7
     if not ud.UserDataExists(op,"File Handling Message"):
         ud.CreateUserData(op,"File Handling Message", c4d.DTYPE_STATICTEXT, True)
-    #7
+    #8
     if not ud.UserDataExists(op,"Mesh Handling"):
         ud.CreateUserData(op,"Mesh Handling", c4d.DTYPE_SEPARATOR, True)
-    #8
+    #9
     if not ud.UserDataExists(op,"Swap Y/Z"):
         ud.CreateUserData(op,"Swap Y/Z", c4d.DTYPE_BOOL, True)
-    #9
+    #10
     if not ud.UserDataExists(op,"Phong Smoothing"):
         ud.CreateUserData(op,"Phong Smoothing", c4d.DTYPE_BOOL, True)
-    #10
+    #11
     if not ud.UserDataExists(op,"Import Vertex Colors"):
         ud.CreateUserData(op,"Import Vertex Colors", c4d.DTYPE_BOOL, True)
-    #11
+    #12
     if not ud.UserDataExists(op,"Create Test Material"):
         ud.CreateUserData(op,"Create Test Material", c4d.DTYPE_BOOL, True)
-    #12
+    #13
     if not ud.UserDataExists(op,"Mesh Handling Message"):
         ud.CreateUserData(op,"Mesh Handling Message", c4d.DTYPE_STATICTEXT, True)
 
+def GetFiles(directory):
+    files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+    return files
+
+def SplitPath(path):
+    directory = os.path.dirname(path) #Directory of the file
+    fullname = os.path.basename(path) #Fullname of the file, including extension
+    name, extension = os.path.splitext(fullname) #Split the actual name from the extension
+
+    return directory, fullname, name, extension
+
 def ResolveFilename(filename):
+    global runcount
+    global prev_filename
+    global min_Frame
+    global max_Frame
+    global digitCount
+
     """
     Accepts a provided FileName pointng to the first object of the sequence to import, and figures out the apporppriate filename to load based on the current animation 
     frame.
@@ -71,22 +98,6 @@ def ResolveFilename(filename):
     Returns:
             Path: the filename of the actual object to load.
     """
-
-    first = ud.GetUserDataValue(op, "First Frame")
-    last = ud.GetUserDataValue(op, "Last Frame")
-    step = ud.GetUserDataValue(op, "Frame Step")
-    
-    
-    frame = doc.GetTime().GetFrame(doc.GetFps())
-    
-    if last <= first:
-        frame = max(frame,first) #open ended sequence, no max limit
-    else:
-        frame = max(min(frame,last),first) # Min and Max limit applied
-    
-    if frame%step != 0:
-        frame = frame - (frame%step) #Frame skipping
-
 
     if filename == None or filename == "":
         msg = ">>> Empty Filename. Please provide a link to the FIRST item of the sequence you want to import"
@@ -99,9 +110,12 @@ def ResolveFilename(filename):
         return
     
     if os.path.isfile(filename):
-        directory = os.path.dirname(filename) #Directory of the file
-        fullname = os.path.basename(filename) #Fullname of the file, including extension
-        name, extension = os.path.splitext(fullname) #Split the actual name from the extension
+
+        if runcount != 0:
+            if prev_filename != filename:
+                runcount = 0
+
+        directory, fullname, name, extension = SplitPath(filename)
         
         if extension != ".obj":
             msg = ">>> Invalid FileType. Please provide an .obj file."
@@ -117,23 +131,86 @@ def ResolveFilename(filename):
             ud.SetUserDataValue(op,"File Handling Message", msg)
             return
 
-        formatted_frame = str(frame).zfill(len(digit)) # Fill number with zeros if necessary
-        
         if len(parts[:-1])>1:
             nonDigitName =  " ".join(parts[:-1]).replace(" ","")
         else:
             nonDigitName = parts[0]
         
+        if runcount == 0:
+            files = GetFiles(directory)
+
+            for f in files:
+
+                _d,_f,_n,_e = SplitPath(f)
+
+                if _e == ".obj":
+
+                    _parts = filter(None, re.split(r'(\d+)', _n)) # Split the digit and non-digit parts of the name
+
+                    if len(_parts[:-1])>1:
+                        _nonDigitName =  " ".join(_parts[:-1]).replace(" ","")
+                    else:
+                        _nonDigitName = _parts[0]
+
+                    if _parts[-1].isdigit(): #if the last part is digit, use it
+                        _digit = _parts[-1]
+
+                    if _nonDigitName == nonDigitName:
+                        if int(_digit) < min_Frame:
+                            min_Frame = int(digit)
+                            digitCount = len(_digit)
+
+                        if int(_digit)>= max_Frame:
+                            max_Frame = int(_digit)
+                        
+
+        ud.SetUserDataValue(op, "First Frame", int(min_Frame))
+        ud.SetUserDataValue(op, "Last Frame", int(max_Frame))
+
+        formatted_frame = ConstructFrame() 
         Path = os.path.join(directory, nonDigitName + formatted_frame + extension )
         
         msg = ">>> File: ' " +  nonDigitName + formatted_frame + extension + " ' succesfully located."
         ud.SetUserDataValue(op,"File Handling Message", msg)
         return Path
-    
     else:
         msg = ">>> Invalid FileType. Please provide a link to an .obj file, not to a folder."
         ud.SetUserDataValue(op,"File Handling Message", msg)
         return
+
+def ConstructFrame():
+
+    """
+        Accepts a provided FileName pointng to the first object of the sequence to import, and figures out the apporppriate filename to load based on the current animation 
+        frame.
+
+        Args:
+            filename: The filename of the first object in the OBJ sequence
+        Returns:
+            Path: the filename of the actual object to load.
+    """
+    global min_Frame
+    global max_Frame
+    global digitCount
+
+    first = max(ud.GetUserDataValue(op, "First Frame"), min_Frame)
+    last = min(ud.GetUserDataValue(op, "Last Frame"), max_Frame)
+    step = ud.GetUserDataValue(op, "Frame Step")
+    offset = ud.GetUserDataValue(op, "Frame Offset")
+
+    frame = doc.GetTime().GetFrame(doc.GetFps()) + offset
+
+    if last <= first:
+        frame = max(frame,first) #open ended sequence, no max limit
+    else:
+        frame = max(min(frame,last),first) # Min and Max limit applied
+
+    if frame%step != 0:
+        frame = frame - (frame%step) #Frame skipping
+
+    formatted_frame = str(frame).zfill(digitCount) # Fill number with zeros if necessary
+
+    return formatted_frame
 
 def ParseObj(filename, swapyz=False):
     """
@@ -316,6 +393,9 @@ def UpdateMaterial():
 
 def ImportToCinema():
         global Polygon
+        global runcount
+        global prev_filename
+
         SetupUserData()
 
         PATH =  ResolveFilename(ud.GetUserDataValue(op, "First Object FileName"))
@@ -357,6 +437,9 @@ def ImportToCinema():
                 msg = ">>> Mesh Succesfully Loaded! It should appear in the Viewport."
                 ud.SetUserDataValue(op,"Mesh Handling Message", msg)
             
+            runcount += 1
+            prev_filename = ud.GetUserDataValue(op, "First Object FileName")
+
             return Polygon
         else:
             msg = "No Mesh Loaded, because of faulty Filename. Check the File Handling Message above."
@@ -368,9 +451,9 @@ def ImportToCinema():
 #prev.cache  = None           
 
 def main():
+    global runcount
     op.SetName("--- OBJ Sequence Reader by George Adamon ---")
     return ImportToCinema()
-    
 
     #frame   = doc.GetTime().GetFrame(doc.GetFps())
     #if frame != prev.frame:

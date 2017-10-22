@@ -64,7 +64,7 @@ def CreateUserData (obj, itemName, itemtype, overwrite=False):
 
     return True
 
-def CreateFloatData (obj, itemName="Float", interface=c4d.CUSTOMGUI_REAL, _min=0.0, _max = 1.0, step=0.01,  units="Real", overwrite=False):
+def CreateFloatData (obj, itemName="Float", interface=c4d.CUSTOMGUI_REAL, _min=None, _max = None, step=0.01,  units="Real", overwrite=False):
     """
     Create a new UserData item of type "Float" and add it to the UserDataContainer of the specified object.
 
@@ -99,8 +99,11 @@ def CreateFloatData (obj, itemName="Float", interface=c4d.CUSTOMGUI_REAL, _min=0
     BaseContainer[c4d.DESC_NAME] = itemName
     BaseContainer[c4d.DESC_SHORT_NAME] = itemName
 
-    BaseContainer[c4d.DESC_MIN] = _min
-    BaseContainer[c4d.DESC_MAX] = _max
+    if _min != None:
+        BaseContainer[c4d.DESC_MIN] = _min
+    if _max!=None:
+        BaseContainer[c4d.DESC_MAX] = _max
+
     BaseContainer[c4d.DESC_STEP] = step
 
     BaseContainer[c4d.DESC_CUSTOMGUI] = interface
@@ -110,7 +113,7 @@ def CreateFloatData (obj, itemName="Float", interface=c4d.CUSTOMGUI_REAL, _min=0
 
     return True
 
-def CreateIntegerData (obj, itemName="Integer", interface=c4d.CUSTOMGUI_LONG, _min=0, _max = 100, step=1, overwrite=False):
+def CreateIntegerData (obj, itemName="Integer", interface=c4d.CUSTOMGUI_LONG, _min=None, _max = None, step=1, overwrite=False):
 
     """
     Create a new UserData item of type "Integer" and add it to the UserDataContainer of the specified object.
@@ -145,8 +148,11 @@ def CreateIntegerData (obj, itemName="Integer", interface=c4d.CUSTOMGUI_LONG, _m
     BaseContainer[c4d.DESC_NAME] = itemName
     BaseContainer[c4d.DESC_SHORT_NAME] = itemName
 
-    BaseContainer[c4d.DESC_MIN] = _min
-    BaseContainer[c4d.DESC_MAX] = _max
+    if _min != None:
+        BaseContainer[c4d.DESC_MIN] = _min
+    if _max!=None:
+        BaseContainer[c4d.DESC_MAX] = _max
+        
     BaseContainer[c4d.DESC_STEP] = step
 
     BaseContainer[c4d.DESC_CUSTOMGUI] = interface

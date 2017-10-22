@@ -5,14 +5,11 @@ Valid up to C4D version R18.
 ____
 
 Cinema4D BaseObjects are Initiated in the following way:
-	``` python
-	new_object = c4d.BaseObject ( object_type )
-	```
+	`new_object = c4d.BaseObject ( object_type )`
 
 For example creating a cube from scratch, would be like:
-	``` python
-	obj = c4d.BaseObject(c4d.Ocube)
-	```
+	`
+	obj = c4d.BaseObject(c4d.Ocube)`
 ____
 
 ## BaseObject Types

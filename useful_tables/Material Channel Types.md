@@ -1,7 +1,7 @@
 
 
 # List of all the available Channels of Cinema4D Materials
-Retrieved from developers.maxon.net/docs/Cinema4DPythonSDK/html/consts/CHANNEL.html
+Retrieved from http://developers.maxon.net/docs/Cinema4DPythonSDK/html/consts/CHANNEL.html
 
 Usage example (Creating a Material and disabling its color Channel):
   mat = c4d.Material()

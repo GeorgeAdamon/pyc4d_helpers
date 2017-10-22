@@ -23,7 +23,6 @@ def UserDataExists(obj, itemName):
                 return True
     return False
 
-
 def FindUserData (obj, itemName):
 
     """ 
@@ -46,25 +45,11 @@ def FindUserData (obj, itemName):
                 return ud #The actual object contained in the UserData item
     return None
 
-def GetUserDataValue (obj, itemName):
-    ud = FindUserData(obj,itemName)
-    return obj[ud[0]]
+
  
-def DestroyUserData(obj, itemName):
 
-    if obj==None: return False
-    UserData = obj.GetUserDataContainer()
-    
-    if UserData:
-        for ud in UserData:
-            if ud[1][c4d.DESC_NAME] == itemName:
-                obj.RemoveUserData(ud[0]) #The actual object contained in the UserData item
-                #c4d.EventAdd()
 
-                return True
-                
-    return False
-
+# ====================== USER DATA CREATION FUNCTIONS ================================== #
 def CreateUserData (obj, itemName, itemtype, overwrite=False):
 
     """ 
@@ -104,7 +89,7 @@ def CreateUserData (obj, itemName, itemtype, overwrite=False):
     if itemtype==None: itemtype = c4d.NONE
     
     UserData = obj.GetUserDataContainer()
-    if itemName == None: itemName = "No Name " + str(len(UserData))
+    if itemName == None: itemName = "User Data" + str(len(UserData))
 
     if UserDataExists(obj,itemName):
         if overwrite==False: 
@@ -123,21 +108,33 @@ def CreateUserData (obj, itemName, itemtype, overwrite=False):
         BaseContainer[c4d.DESC_CUSTOMGUI] =  c4d.CUSTOMGUI_SEPARATOR
 
     item = obj.AddUserData(BaseContainer)
-    #c4d.EventAdd()
 
-    return obj[item]
+    return True
 
-def CreateFloatData (obj, itemName, itemtype=c4d.CUSTOMGUI_REAL, _min=0.0, _max = 100.0, step=1,  units=c4d.DESC_UNIT_FLOAT, overwrite= False):
+def CreateFloatData (obj, itemName="Float", interface=c4d.CUSTOMGUI_REAL, _min=0.0, _max = 1.0, step=0.01,  units="Real", overwrite=False):
+    """
+    Create a new UserData item of type "Float" and add it to the UserDataContainer of the specified object.
+
+    Args:
+        obj (c4d.BaseObject): The Cinema4D object to add UserData to.
+        [optional] itemName (str): The name of the UserData item to be created. Default is "Float".
+        [optional] interface (str): The type of the User Interface to implement for this User Data item. Can be "Float" , "Float Slider" or "Float Slider No EditField" . Default is "Float".
+        [optional] _min (float): The minimum allowed value for this UserData item. 0.0 by default.
+        [optional] _max (float): The maximum allowed value for this UserData item. 1.0 by default.
+        [optional] _step (float): The step value for each UI nudge. 0.01 by default.
+        [optional] units (str or int): The units in which the float value is expressed. Can be "Real", "Percent", "Degrees" or "Meters". "Real" by default.
+        [optional] overwrite: Whether to overwrite any existing identical UserData. False by default.
+    Returns:
+        True on success, False on failure
+    """
+
     if obj==None: return False
 
-    if isinstance(itemtype,str):
-        itemtype = D.FloatInterface[itemtype]
+    if isinstance(interface,str) or isinstance(interface,str):
+        interface = D.FloatInterface[interface]
     
     if isinstance(units,str):
         units = D.FloatUnits[units]
-
-    UserData = obj.GetUserDataContainer()
-    if itemName == None: itemName = "No Name " + str(len(UserData))
 
     if UserDataExists(obj,itemName):
         if overwrite==False: 
@@ -153,24 +150,37 @@ def CreateFloatData (obj, itemName, itemtype=c4d.CUSTOMGUI_REAL, _min=0.0, _max 
     BaseContainer[c4d.DESC_MAX] = _max
     BaseContainer[c4d.DESC_STEP] = step
 
-    BaseContainer[c4d.DESC_CUSTOMGUI] = itemtype
+    BaseContainer[c4d.DESC_CUSTOMGUI] = interface
     BaseContainer[c4d.DESC_UNIT] = units
 
-
     item = obj.AddUserData(BaseContainer)
-    #c4d.EventAdd()
 
     return True
 
-def CreateIntegerData (obj, itemName, itemtype=c4d.CUSTOMGUI_LONG, _min=0, _max = 100, step=1, overwrite= False):
+def CreateIntegerData (obj, itemName="Integer", interface=c4d.CUSTOMGUI_LONG, _min=0, _max = 100, step=1, overwrite=False):
+
+    """
+    Create a new UserData item of type "Integer" and add it to the UserDataContainer of the specified object.
+
+    Args:
+        obj (c4d.BaseObject): The Cinema4D object to add UserData to.
+        [optional] itemName (str): The name of the UserData item to be created. Default is "Integer".
+        [optional] interface (str or int): The type of the User Interface to implement for this User Data item. Can be "Cycle" , "Cycle Button" , "Integer" or "Integer Slider". Default is "Integer"
+        [optional] _min (float): The minimum allowed value for this UserData item. 0.0 by default.
+        [optional] _max (float): The maximum allowed value for this UserData item. 1.0 by default.
+        [optional] _step (float): The step value for each UI nudge. 0.01 by default.
+        [optional] units (str): The units in which the float value is expressed. Can be "Real" , "Percent" , "Degrees" or "Meters". "Real" by default.
+        [optional] overwrite: Whether to overwrite any existing identical UserData. False by default.
+    Returns:
+        True on success, False on failure
+    """
+
     if obj==None: return False
 
-    if isinstance(itemtype,str):
-        itemtype = D.IntegerInterface[itemtype]
+    if isinstance(interface,str):
+        interface = D.IntegerInterface[interface]
      
     UserData = obj.GetUserDataContainer()
-
-    if itemName == None: itemName = "No Name " + str(len(UserData))
 
     if UserDataExists(obj,itemName):
         if overwrite==False: 
@@ -186,15 +196,58 @@ def CreateIntegerData (obj, itemName, itemtype=c4d.CUSTOMGUI_LONG, _min=0, _max 
     BaseContainer[c4d.DESC_MAX] = _max
     BaseContainer[c4d.DESC_STEP] = step
 
-    BaseContainer[c4d.DESC_CUSTOMGUI] = itemtype
+    BaseContainer[c4d.DESC_CUSTOMGUI] = interface
     BaseContainer[c4d.DESC_UNIT] = c4d.DESC_UNIT_LONG
 
     item = obj.AddUserData(BaseContainer)
-    #c4d.EventAdd()
 
     return True
 
-def SetUserData (obj, itemName, value):
+def CreateButton (obj, itemName="Buton", overwrite=False):
+
+    """
+    Create a new UserData item of type "Button" and add it to the UserDataContainer of the specified object.
+
+    Args:
+        obj (c4d.BaseObject): The Cinema4D object to add UserData to.
+        [optional] itemName (str): The name of the UserData item to be created. Default is "Button".
+        [optional] overwrite: Whether to overwrite any existing identical UserData. False by default.
+    Returns:
+        True on success, False on failure
+    """
+
+    if obj==None: return False
+
+    UserData = obj.GetUserDataContainer()
+
+    if itemName == None: itemName = "Button" + str(len(UserData))
+
+    if UserDataExists(obj,itemName):
+        if overwrite==False: 
+            return False
+        else:
+            DestroyUserData(obj,itemName)
+
+    BaseContainer = c4d.GetCustomDatatypeDefault(c4d.DTYPE_BUTTON)
+    BaseContainer[c4d.DESC_NAME] = itemName
+    BaseContainer[c4d.DESC_SHORT_NAME] = itemName
+    BaseContainer[c4d.DESC_CUSTOMGUI] = c4d.CUSTOMGUI_BUTTON
+
+    item = obj.AddUserData(BaseContainer)
+
+    #Do NOT call c4d.EventAdd() if you use this function inside a Python Generator object, or inside a Python tag. Strange things will happen.
+    #if not ( op.GetType() == 1023866 or op.GetType()== 1022749 ):
+    #    c4d.EventAdd()
+
+    return True
+
+# ====================== USER DATA VALUE ASSIGNMENT FUNCTIONS ================================== #
+def GetUserDataValue (obj, itemName):
+    ud = FindUserData(obj,itemName)
+    return obj[ud[0]]
+
+def SetUserDataValue (obj, itemName, value):
+
     """ 
     Sets the value of a UserData item of a Cinema4D object
 
@@ -206,6 +259,7 @@ def SetUserData (obj, itemName, value):
         True on success,
         False on failure
     """
+
     if obj==None: return False
     
     UserData = obj.GetUserDataContainer()
@@ -214,7 +268,36 @@ def SetUserData (obj, itemName, value):
         for ud in UserData:
             if ud[1][c4d.DESC_NAME] == itemName:
                 obj[ud[0]] = value
-                #c4d.EventAdd()
+
+                #Do NOT call c4d.EventAdd() if you use this function inside a Python Generator object, or inside a Python tag. Strange things will happen.
+                #if not ( op.GetType() == 1023866 or op.GetType()== 1022749 ):
+                #    c4d.EventAdd()
+
                 return True
     return False
 
+# ====================== USER DATA DESTRUCTION FUNCTIONS ================================== #
+def DestroyUserData(obj, itemName):
+
+    if obj==None: return False
+
+    UserData = obj.GetUserDataContainer()
+    if UserData==None: return False
+
+    if UserData:
+        for i,ud in enumerate(UserData):
+            if ud[1][c4d.DESC_NAME] == itemName:
+                obj.RemoveUserData(i) #The actual object contained in the UserData item
+                return True
+
+def DestroyAllUserData(obj, itemName):
+
+    if obj==None: return False
+
+    UserData = obj.GetUserDataContainer()
+    if UserData==None: return False
+
+    for i,ud in enumerate(UserData):
+        obj.RemoveUserData(i)
+
+    return True

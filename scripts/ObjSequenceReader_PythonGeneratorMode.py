@@ -7,6 +7,10 @@ from pyc4d_helpers import UserData as ud
 from pyc4d_helpers import Materials as hm
 from pyshull import pyshull as hull
 
+
+#op[c4d.TPYTHON_FRAME] = True
+
+
 minX = 1000000000000.0
 minY = 1000000000000.0
 minZ = 1000000000000.0
@@ -14,8 +18,6 @@ minZ = 1000000000000.0
 maxX = 0.0
 maxY = 0.0
 maxZ = 0.0
-
-#op[c4d.TPYTHON_FRAME] = True
 
 runcount = 0
 prev_filename = ""
@@ -27,7 +29,7 @@ digitCount = 0
 shader = hm.CreateShader(c4d.Xvertexmap, "OBJ Vertex Colors Shader")
 Polygon = c4d.BaseObject(c4d.Opolygon)
 
-### GENERATOR FUNCTIONS
+# ====================== UI FUNCTIONS ======================================= #
 def SetupUserData():
     #1
     if not ud.UserDataExists(op,"File Handling"):
@@ -75,6 +77,7 @@ def SetupUserData():
     if not ud.UserDataExists(op,"Mesh Handling Message"):
         ud.CreateUserData(op,"Mesh Handling Message", c4d.DTYPE_STATICTEXT, True)
 
+# ====================== FILE SYSTEM FUNCTIONS ============================== #
 def GetFiles(directory):
     files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
     return files
@@ -87,11 +90,6 @@ def SplitPath(path):
     return directory, fullname, name, extension
 
 def ResolveFilename(filename):
-    global runcount
-    global prev_filename
-    global min_Frame
-    global max_Frame
-    global digitCount
 
     """
     Accepts a provided FileName pointng to the first object of the sequence to import, and figures out the apporppriate filename to load based on the current animation 
@@ -102,6 +100,11 @@ def ResolveFilename(filename):
     Returns:
             Path: the filename of the actual object to load.
     """
+    global runcount
+    global prev_filename
+    global min_Frame
+    global max_Frame
+    global digitCount
 
     if filename == None or filename == "":
         msg = ">>> Empty Filename. Please provide a link to the FIRST item of the sequence you want to import"
@@ -170,17 +173,21 @@ def ResolveFilename(filename):
             ud.SetUserDataValue(op, "First Frame", int(min_Frame))
             ud.SetUserDataValue(op, "Last Frame", int(max_Frame))
 
-        formatted_frame = ConstructFrame() 
-        Path = os.path.join(directory, nonDigitName + formatted_frame + extension )
-        
-        msg = ">>> File: ' " +  nonDigitName + formatted_frame + extension + " ' succesfully located."
-        ud.SetUserDataValue(op,"File Handling Message", msg)
-        return Path
+        formatted_frame = ConstructFrame()
+
+        if formatted_frame != -1:
+            Path = os.path.join(directory, nonDigitName + formatted_frame + extension )
+            msg = ">>> File: ' " +  nonDigitName + formatted_frame + extension + " ' succesfully located."
+            ud.SetUserDataValue(op,"File Handling Message", msg)
+            return Path
+        else:
+            return -1
     else:
         msg = ">>> Invalid FileType. Please provide a link to an .obj file, not to a folder."
         ud.SetUserDataValue(op,"File Handling Message", msg)
         return
 
+# ====================== CURRENT FRAME MANIPULATOR FUNCTIONS ================ #
 def ConstructFrame():
 
     """
@@ -224,11 +231,13 @@ def ConstructFrame():
             frame = frame%last
         else:
             frame = last - (frame%last)
-
+    elif after == 3:
+        return -1
     formatted_frame = str(frame).zfill(digitCount) # Fill number with zeros if necessary
 
     return formatted_frame
 
+# ====================== OBJ PARSING CORE CODE ============================== #
 def ParseObj(filename, swapyz=False):
     """
     Loads an OBJ file from disk.
@@ -279,6 +288,68 @@ def ParseObj(filename, swapyz=False):
     
     return vertices, faces, colors
 
+# ====================== TOP LEVEL CODE ===================================== #
+def ImportToCinema():
+        global Polygon
+        global runcount
+        global prev_filename
+
+        SetupUserData()
+
+        PATH =  ResolveFilename(ud.GetUserDataValue(op, "First Object FileName"))
+        
+        if PATH != None and PATH != -1:
+
+            N = os.path.basename(PATH)
+
+            Vertices, Faces, Colors = ParseObj(PATH, ud.GetUserDataValue(op, "Swap Y/Z")) #LOAD OBJ FILE
+            
+            Polygon = c4d.BaseObject(c4d.Opolygon)
+            Polygon.ResizeObject(len(Vertices),len(Faces)) #New number of points, New number of polygons
+            Polygon.SetName(N)
+
+            UpdateVertexCoordinates(Vertices)
+            UpdateFaces(Faces)
+
+            if ud.GetUserDataValue(op, "Import Vertex Colors"):
+                UpdateVertexColors(Colors)
+                if  ud.GetUserDataValue(op,"Create Test Material"):
+                    UpdateMaterial()
+
+            if ud.GetUserDataValue(op, "Phong Smoothing"):
+                Polygon.CreatePhongNormals()
+                Polygon.SetPhong(True,True,90)
+            else:
+                Polygon.SetPhong(False,True,90)
+            
+            
+            if len(Vertices)== 0 and len(Faces)== 0:
+                msg = ">>> Mesh Succesfully Loaded, but has no Vertices, neither Faces. It's OK, though."
+                ud.SetUserDataValue(op,"Mesh Handling Message", msg)
+            elif len(Vertices)== 0:
+                msg = ">>> Mesh Succesfully Loaded, but has no Vertices.  It's OK, though."
+                ud.SetUserDataValue(op,"Mesh Handling Message", msg)
+            elif len(Faces)== 0:
+                msg = ">>> Mesh Succesfully Loaded, but has no Faces.  It's OK, though."
+                ud.SetUserDataValue(op,"Mesh Handling Message", msg)
+            else:
+                msg = ">>> Mesh Succesfully Loaded! It should appear in the Viewport."
+                ud.SetUserDataValue(op,"Mesh Handling Message", msg)
+            
+            runcount += 1
+            prev_filename = ud.GetUserDataValue(op, "First Object FileName")
+
+            return Polygon
+        elif PATH == -1:
+            msg = "Outside of Frame Range."
+            ud.SetUserDataValue(op,"Mesh Handling Message", msg)
+            return
+        else:
+            msg = "No Mesh Loaded, because of faulty Filename. Check the File Handling Message above."
+            ud.SetUserDataValue(op,"Mesh Handling Message", msg)
+            return
+
+# ====================== UPDATING FUNCTIONS ================================= #
 def UpdateVertexCoordinates(Vertices):
     global Polygon
     global maxX, maxY, maxZ, minX, minY, minZ
@@ -408,60 +479,6 @@ def UpdateMaterial():
         _optag = _tag.GetClone()
         _optag.SetName("OBJ Sequence Texture Tag")
 
-def ImportToCinema():
-        global Polygon
-        global runcount
-        global prev_filename
-
-        SetupUserData()
-
-        PATH =  ResolveFilename(ud.GetUserDataValue(op, "First Object FileName"))
-        
-        N = os.path.basename(PATH)
-        
-        if PATH != None:
-            Vertices, Faces, Colors = ParseObj(PATH, ud.GetUserDataValue(op, "Swap Y/Z")) #LOAD OBJ FILE
-            
-            Polygon = c4d.BaseObject(c4d.Opolygon)
-            Polygon.ResizeObject(len(Vertices),len(Faces)) #New number of points, New number of polygons
-            Polygon.SetName(N)
-
-            UpdateVertexCoordinates(Vertices)
-            UpdateFaces(Faces)
-
-            if ud.GetUserDataValue(op, "Import Vertex Colors"):
-                UpdateVertexColors(Colors)
-                if  ud.GetUserDataValue(op,"Create Test Material"):
-                    UpdateMaterial()
-
-            if ud.GetUserDataValue(op, "Phong Smoothing"):
-                Polygon.CreatePhongNormals()
-                Polygon.SetPhong(True,True,90)
-            else:
-                Polygon.SetPhong(False,True,90)
-            
-            
-            if len(Vertices)== 0 and len(Faces)== 0:
-                msg = ">>> Mesh Succesfully Loaded, but has no Vertices, neither Faces. It's OK, though."
-                ud.SetUserDataValue(op,"Mesh Handling Message", msg)
-            elif len(Vertices)== 0:
-                msg = ">>> Mesh Succesfully Loaded, but has no Vertices.  It's OK, though."
-                ud.SetUserDataValue(op,"Mesh Handling Message", msg)
-            elif len(Faces)== 0:
-                msg = ">>> Mesh Succesfully Loaded, but has no Faces.  It's OK, though."
-                ud.SetUserDataValue(op,"Mesh Handling Message", msg)
-            else:
-                msg = ">>> Mesh Succesfully Loaded! It should appear in the Viewport."
-                ud.SetUserDataValue(op,"Mesh Handling Message", msg)
-            
-            runcount += 1
-            prev_filename = ud.GetUserDataValue(op, "First Object FileName")
-
-            return Polygon
-        else:
-            msg = "No Mesh Loaded, because of faulty Filename. Check the File Handling Message above."
-            ud.SetUserDataValue(op,"Mesh Handling Message", msg)
-            return
 
 #prev        = type("", (), {})()     # create a new empty type and instantiate it
 #prev.frame  = 0

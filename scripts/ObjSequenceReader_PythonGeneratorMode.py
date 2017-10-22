@@ -284,7 +284,7 @@ def UpdateMaterial():
         #_mat.SetChannelState(c4d.CHANNEL_COLOR,False)
         #_mat.SetChannelState(c4d.CHANNEL_LUMINANCE,True)
 
-        hm.ApplyShader(_mat, shader, "Luminance")
+        hm.ApplyShader(shader, _mat, "Luminance")
         
         #_mat[c4d.MATERIAL_LUMINANCE_SHADER] = shader
         #_mat.InsertShader(shader)

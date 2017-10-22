@@ -120,13 +120,13 @@ def CreateIntegerData (obj, itemName="Integer", interface=c4d.CUSTOMGUI_LONG, _m
 
     Args:
         obj (c4d.BaseObject): The Cinema4D object to add UserData to.
-        [optional] itemName (str): The name of the UserData item to be created. Default is "Integer".
-        [optional] interface (str or int): The type of the User Interface to implement for this User Data item. Can be "Cycle" , "Cycle Button" , "Integer" or "Integer Slider". Default is "Integer"
-        [optional] _min (float): The minimum allowed value for this UserData item. 0.0 by default.
-        [optional] _max (float): The maximum allowed value for this UserData item. 1.0 by default.
-        [optional] _step (float): The step value for each UI nudge. 0.01 by default.
-        [optional] units (str): The units in which the float value is expressed. Can be "Real" , "Percent" , "Degrees" or "Meters". "Real" by default.
-        [optional] overwrite: Whether to overwrite any existing identical UserData. False by default.
+        itemName (str): The name of the UserData item to be created. Default is "Integer".
+        interface (str or int): The type of the User Interface to implement for this User Data item. Can be "Integer" or "Integer Slider". Default is "Integer"
+        _min (float): The minimum allowed value for this UserData item. 0.0 by default.
+        _max (float): The maximum allowed value for this UserData item. 1.0 by default.
+        _step (float): The step value for each UI nudge. 0.01 by default.
+        units (str): The units in which the float value is expressed. Can be "Real" , "Percent" , "Degrees" or "Meters". "Real" by default.
+        overwrite: Whether to overwrite any existing identical UserData. False by default.
     Returns:
         True on success, False on failure
     """
@@ -144,23 +144,72 @@ def CreateIntegerData (obj, itemName="Integer", interface=c4d.CUSTOMGUI_LONG, _m
         else:
             DestroyUserData(obj,itemName)
 
-    BaseContainer = c4d.GetCustomDatatypeDefault(c4d.DTYPE_LONG)
-    BaseContainer[c4d.DESC_NAME] = itemName
-    BaseContainer[c4d.DESC_SHORT_NAME] = itemName
-
-    if _min != None:
-        BaseContainer[c4d.DESC_MIN] = _min
-    if _max!=None:
-        BaseContainer[c4d.DESC_MAX] = _max
+    if not interface == c4d.CUSTOMGUI_CYCLE or interface == c4d.CUSTOMGUI_CYCLEBUTTON:
         
-    BaseContainer[c4d.DESC_STEP] = step
+        BaseContainer = c4d.GetCustomDatatypeDefault(c4d.DTYPE_LONG)
+        BaseContainer[c4d.DESC_NAME] = itemName
+        BaseContainer[c4d.DESC_SHORT_NAME] = itemName
+        BaseContainer[c4d.DESC_CUSTOMGUI] = interface
 
-    BaseContainer[c4d.DESC_CUSTOMGUI] = interface
-    BaseContainer[c4d.DESC_UNIT] = c4d.DESC_UNIT_LONG
+        if _min != None:
+            BaseContainer[c4d.DESC_MIN] = _min
+        if _max!=None:
+            BaseContainer[c4d.DESC_MAX] = _max
+        
+        BaseContainer[c4d.DESC_STEP] = step
+        BaseContainer[c4d.DESC_UNIT] = c4d.DESC_UNIT_LONG
 
-    item = obj.AddUserData(BaseContainer)
+        item = obj.AddUserData(BaseContainer)
 
-    return True
+        return True
+
+    return False
+
+def CreateDropDown (obj, itemName="DropDown", interface=c4d.CUSTOMGUI_CYCLE, data = ["A", "B", "C"], overwrite=False):
+
+    """
+    Create a new UserData item of type "Integer" and add it to the UserDataContainer of the specified object.
+
+    Args:
+        obj (c4d.BaseObject): The Cinema4D object to add UserData to.
+        itemName (str): The name of the UserData item to be created. Default is "DropDown".
+        interface (str or int): The type of the User Interface to implement for this User Data item. Can be "Cycle" or "Cycle Button". Default is "Cycle"
+        data ([str]): A list of strings representing the different values of the Dropdown list.
+        overwrite: Whether to overwrite any existing identical UserData. False by default.
+    Returns:
+        True on success, False on failure
+    """
+
+    if obj==None: return False
+
+    if isinstance(interface,str):
+        interface = D.IntegerInterface[interface]
+     
+    UserData = obj.GetUserDataContainer()
+
+    if UserDataExists(obj,itemName):
+        if overwrite==False: 
+            return False
+        else:
+            DestroyUserData(obj,itemName)
+
+    if interface == c4d.CUSTOMGUI_CYCLE or interface == c4d.CUSTOMGUI_CYCLEBUTTON:
+
+        BaseContainer = c4d.GetCustomDatatypeDefault(c4d.DTYPE_LONG)
+        BaseContainer[c4d.DESC_NAME] = itemName
+        BaseContainer[c4d.DESC_SHORT_NAME] = itemName
+        BaseContainer[c4d.DESC_CUSTOMGUI] = interface
+
+        cycle = c4d.BaseContainer()
+        for index in range(0, len(data)):
+            cycle.SetString(index, data[index])
+
+        BaseContainer.SetContainer(c4d.DESC_CYCLE, cycle)
+
+        item = obj.AddUserData(BaseContainer)
+        return True
+
+    return False
 
 def CreateButton (obj, itemName="Buton", overwrite=False):
 

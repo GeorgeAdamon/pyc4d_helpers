@@ -50,6 +50,10 @@ def SetupUserData():
         ud.CreateIntegerData(op,"Frame Offset", "Integer Slider")
         ud.SetUserDataValue(op, "Frame Offset", 0)
     #7
+    if not ud.UserDataExists(op,"After Last Frame"):
+        ud.CreateDropDown(op,"After Last Frame", "Cycle", ["Freeze", "Loop", "Ping Pong", "Disappear"])
+        ud.SetUserDataValue(op, "After Last Frame", 0)
+    #7
     if not ud.UserDataExists(op,"File Handling Message"):
         ud.CreateUserData(op,"File Handling Message", c4d.DTYPE_STATICTEXT, True)
     #8
@@ -163,9 +167,8 @@ def ResolveFilename(filename):
                         if int(_digit)>= max_Frame:
                             max_Frame = int(_digit)
                         
-
-        ud.SetUserDataValue(op, "First Frame", int(min_Frame))
-        ud.SetUserDataValue(op, "Last Frame", int(max_Frame))
+            ud.SetUserDataValue(op, "First Frame", int(min_Frame))
+            ud.SetUserDataValue(op, "Last Frame", int(max_Frame))
 
         formatted_frame = ConstructFrame() 
         Path = os.path.join(directory, nonDigitName + formatted_frame + extension )
@@ -195,18 +198,32 @@ def ConstructFrame():
 
     first = max(ud.GetUserDataValue(op, "First Frame"), min_Frame)
     last = min(ud.GetUserDataValue(op, "Last Frame"), max_Frame)
+
+    ud.SetUserDataValue(op, "First Frame", first)
+    ud.SetUserDataValue(op, "Last Frame", last)
+
     step = ud.GetUserDataValue(op, "Frame Step")
     offset = ud.GetUserDataValue(op, "Frame Offset")
+    after = ud.GetUserDataValue(op, "After Last Frame")
 
     frame = doc.GetTime().GetFrame(doc.GetFps()) + offset
 
-    if last <= first:
-        frame = max(frame,first) #open ended sequence, no max limit
-    else:
-        frame = max(min(frame,last),first) # Min and Max limit applied
-
     if frame%step != 0:
         frame = frame - (frame%step) #Frame skipping
+    
+    if after == 0:
+        if last <= first:
+            frame = max(frame,first) #open ended sequence, no max limit
+        else:
+            frame = max(min(frame,last),first) # Min and Max limit applied
+    elif after == 1:
+        frame = frame%last
+
+    elif after == 2:
+        if (frame//last)%2 == 0:
+            frame = frame%last
+        else:
+            frame = last - (frame%last)
 
     formatted_frame = str(frame).zfill(digitCount) # Fill number with zeros if necessary
 

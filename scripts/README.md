@@ -6,9 +6,9 @@ In order to be able to use the functions inside the c4d python editor, you need 
 
 ## OBJ Sequence Reader Scripts
 ### Installation
-#### ObjSequenceReader_PythonGenerator:
+#### ObjSequenceReader_PythonGeneratorMode:
 Create a Python Generator object and load the ObjSequenceReader_PythonGenerator script.
-#### ObjSequenceReader_PythonTag:
+#### ObjSequenceReader_PythonTagMode:
 Create a Null object, attach a Python Tag to it and load the ObjSequenceReader_PythonTag script.
 
 ### Internal Dependencies

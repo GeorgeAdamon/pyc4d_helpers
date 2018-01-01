@@ -431,13 +431,15 @@ def UpdateVertexColors(Colors):
 
     for i in range(Polygon.GetPointCount()):
         if i<len(Colors):
-            col = Colors[i]
+            r = Colors[i][0]
+            g = Colors[i][1]
+            b = Colors[i][2]
         else:
             r = (Polygon.GetPoint(i)[0] - minX) /(maxX-minX)
             g = (Polygon.GetPoint(i)[1] - minY) /(maxY-minY)
             b = (Polygon.GetPoint(i)[2] - minZ) /(maxZ-minZ)
 
-            col = c4d.Vector(r,g,b)
+        col = c4d.Vector(r,g,b)
        
         c4d.VertexColorTag.SetColor(data, None, None, i, col)
         c4d.VertexColorTag.SetColor(data2, None, None, i, col)

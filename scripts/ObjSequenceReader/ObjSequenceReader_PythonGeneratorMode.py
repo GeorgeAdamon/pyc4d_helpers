@@ -10,7 +10,6 @@ from pyshull import pyshull as hull
 
 #op[c4d.TPYTHON_FRAME] = True
 
-
 minX = 1000000000000.0
 minY = 1000000000000.0
 minZ = 1000000000000.0
@@ -28,6 +27,7 @@ digitCount = 0
 
 shader = hm.CreateShader(c4d.Xvertexmap, "OBJ Vertex Colors Shader")
 Polygon = c4d.BaseObject(c4d.Opolygon)
+
 
 # ====================== UI FUNCTIONS ======================================= #
 def SetupUserData():
@@ -257,6 +257,38 @@ def ConstructFrame():
 
     return formatted_frame
 
+# ====================== UTILITY FUNCTIONS FOR MANIPULATING NORMAL TAG ====== #
+# Obtained From: http://www.plugincafe.com/forum/forum_posts.asp?TID=9752&PID=38672#38672
+
+def float2bytes(f):
+    int_value = int(math.fabs(f * 32000.0))
+    high_byte = int(int_value / 256)
+    low_byte = int_value - 256 * high_byte
+
+    if f < 0:
+        high_byte = 255-high_byte
+        low_byte = 255-low_byte
+
+    return (low_byte,high_byte)
+
+def set_normals(normal_tag,polygon,normal_a,normal_b,normal_c,normal_d):
+
+    normal_list = [normal_a, normal_b, normal_c, normal_d]
+    normal_buffer = normal_tag.GetLowlevelDataAddressW()
+    vector_size = 6
+    component_size = 2
+
+    for v in range(0,4):
+        normal = normal_list[v]
+        component = [normal.x, normal.y, normal.z]
+
+        for c in range(0,3):
+            low_byte, high_byte = float2bytes(component[c])
+
+            normal_buffer[normal_tag.GetDataSize()*polygon+v*vector_size+c*component_size+0] = chr(low_byte)
+            normal_buffer[normal_tag.GetDataSize()*polygon+v*vector_size+c*component_size+1] = chr(high_byte)
+
+
 # ====================== OBJ PARSING CORE CODE ============================== #
 def ParseObj(filename, swapyz=False, flipz= False , scale = 1.0):
     """
@@ -272,8 +304,13 @@ def ParseObj(filename, swapyz=False, flipz= False , scale = 1.0):
     """
     
     vertices = []
-    colors = []
+    vertexNormals =[]
+    vertexColors = []
+    vertexTextureCoords = []
+
     faces = []
+    facesNormals = []
+    facesTextureCoords = []
 
     for line in open(filename, "r"):
             
@@ -298,14 +335,46 @@ def ParseObj(filename, swapyz=False, flipz= False , scale = 1.0):
             
             if len(values) == 7: # VERTEX COLORS
                 c = map(float, values[4:])
-                colors.append(c)
-            
+                vertexColors.append(c)
+        
+        elif values[0] == 'vn': # VERTEX NORMALS
+            vn = map(float, values[1:4])
+            vertexNormals.append(vn)
+
+        elif values[1] == 'vt': #VERTEX TEXTURE COORDS
+            vt =  map(float, values[1:4])
+            vertexTextureCoords.append(vt)
+
         elif values[0] == 'f': # FACES
             face = []
+            face_vertex_coords = []
+            face_vertex_normals = []
+
             for v in values[1:]:
-                face.append(int(v.split("//")[0]))
-            if len(face)<=4:
+                facedata = (v.split("/"))
+                
+                if len(facedata) > 0:
+                    
+                    face.append(int(facedata[0])) #ADD FACE INDICES
+
+                    if len(facedata) == 2:
+                        face_vertex_coords.append(int(facedata[1])) # IF EXISTENT, ADD VERTEX TEXTURE COORDINATES INDICES
+
+                    if len(facedata) == 3:
+                        if facedata[1] != "":
+                            face_vertex_coords.append(int(facedata[1])) # IF EXISTENT, ADD VERTEX TEXTURE COORDINATES INDICES
+                        
+                        face_vertex_normals.append(int(facedata[2])) # IF EXISTENT, ADD VERTEX NORMALS INDICES
+
+            if len(face)<=4: #TRIS OR QUADS
                 faces.append(face)
+                
+                if len(face_vertex_normals)>0:
+                    facesNormals.append(face_vertex_normals)
+
+                if len(face_vertex_coords)>0:
+                    facesTextureCoords.append(face_vertex_coords)
+
             else:
                 pts = [vertices[i-1] for i in face]
                 triangles = hull.PySHull(pts)
@@ -313,7 +382,7 @@ def ParseObj(filename, swapyz=False, flipz= False , scale = 1.0):
                     newface =  [ face[t[0]], face[t[1]], face[t[2]]  ]
                     faces.append(newface)
     
-    return vertices, faces, colors
+    return vertices, faces, vertexColors, vertexNormals, vertexTextureCoords, facesNormals, facesTextureCoords
 
 # ====================== TOP LEVEL CODE ===================================== #
 def ImportToCinema():
@@ -329,7 +398,7 @@ def ImportToCinema():
 
             N = os.path.basename(PATH)
 
-            Vertices, Faces, Colors = ParseObj(PATH, ud.GetUserDataValue(op, "Swap Y/Z"), ud.GetUserDataValue(op, "Flip Z"), ud.GetUserDataValue(op, "Scale") ) #LOAD OBJ FILE
+            Vertices, Faces, Colors, VertexNormals, VertexUV, FaceNormals, FaceUV = ParseObj(PATH, ud.GetUserDataValue(op, "Swap Y/Z"), ud.GetUserDataValue(op, "Flip Z"), ud.GetUserDataValue(op, "Scale") ) #LOAD OBJ FILE
             
             ud.SetUserDataValue(op, "Vertices", str(len(Vertices)))
             ud.SetUserDataValue(op, "Colors", str(len(Colors)))
@@ -511,6 +580,50 @@ def UpdateMaterial():
     else:
         _optag = _tag.GetClone()
         _optag.SetName("OBJ Sequence Texture Tag")
+
+def UpdateUV():
+    global Polygon
+    global VertexUV
+    global FaceUV
+
+    #UVW TAG FOR THE BEHIND-THE-SCENES POLYGON OBJECT
+    if not Polygon.GetTag(c4d.Tuvw):
+        uvwTag = c4d.UVWTag(Polygon.GetPolygonCount())
+        Polygon.InsertTag(uvwTag)
+    else:
+        uvwTag = Polygon.GetTag(c4d.Tuvw)
+
+    #UVW TAG FOR THE PYTHON GENERATOR OBJECT
+    if not op.GetTag(c4d.Tuvw):
+        op_uvwTag = uvwTag.GetClone()
+        op.InsertTag(op_uvwTag)
+    else:
+        op_uvwTag = op.GetTag(c4d.Tuvw)
+
+    for i in range(Polygon.GetPolygonCount()):
+
+        a = FaceUV[i][0]
+        ca = VertexUV[a]
+        va = c4d.Vector(ca[0],ca[1],0)
+
+        b = FaceUV[i][1]
+        cb = VertexUV[b]
+        vb = c4d.Vector(cb[0],cb[1],0)
+
+        c = FaceUV[i][2]
+        cc = VertexUV[c]
+        vc = c4d.Vector(cc[0],cc[1],0)
+
+        d = FaceUV[i][0]
+
+        if len(FaceUV[i])>3:
+            d = FaceUV[i][3]
+
+        cd = VertexUV[d]
+        vd = c4d.Vector(cd[0],cd[1],0)
+
+        uvwTag.SetSlow(i,va,vb,vc,vd)
+        op_uvwTag.SetSlow(i,va,vb,vc,vd)
 
 #prev        = type("", (), {})()     # create a new empty type and instantiate it
 #prev.frame  = 0

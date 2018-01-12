@@ -341,10 +341,10 @@ def ParseObj(filename, swapyz=False, flipz= False , scale = 1.0):
             vn = map(float, values[1:4])
             vertexNormals.append(vn)
 
-        elif values[1] == 'vt': #VERTEX TEXTURE COORDS
+        elif values[0] == 'vt': #VERTEX TEXTURE COORDS
             vt =  map(float, values[1:4])
             vertexTextureCoords.append(vt)
-
+        
         elif values[0] == 'f': # FACES
             face = []
             face_vertex_coords = []
@@ -381,7 +381,7 @@ def ParseObj(filename, swapyz=False, flipz= False , scale = 1.0):
                 for t in triangles:
                     newface =  [ face[t[0]], face[t[1]], face[t[2]]  ]
                     faces.append(newface)
-    
+
     return vertices, faces, vertexColors, vertexNormals, vertexTextureCoords, facesNormals, facesTextureCoords
 
 # ====================== TOP LEVEL CODE ===================================== #
@@ -397,7 +397,8 @@ def ImportToCinema():
         if PATH != None and PATH != -1:
 
             N = os.path.basename(PATH)
-
+            
+            FaceUV = []
             Vertices, Faces, Colors, VertexNormals, VertexUV, FaceNormals, FaceUV = ParseObj(PATH, ud.GetUserDataValue(op, "Swap Y/Z"), ud.GetUserDataValue(op, "Flip Z"), ud.GetUserDataValue(op, "Scale") ) #LOAD OBJ FILE
             
             ud.SetUserDataValue(op, "Vertices", str(len(Vertices)))
@@ -410,7 +411,10 @@ def ImportToCinema():
 
             UpdateVertexCoordinates(Vertices)
             UpdateFaces(Faces)
-
+            
+            if len(FaceUV)>0:
+                UpdateUV(FaceUV,VertexUV)
+            
             if ud.GetUserDataValue(op, "Import Vertex Colors"):
                 UpdateVertexColors(Colors)
                 if  ud.GetUserDataValue(op,"Create Test Material"):
@@ -581,10 +585,8 @@ def UpdateMaterial():
         _optag = _tag.GetClone()
         _optag.SetName("OBJ Sequence Texture Tag")
 
-def UpdateUV():
+def UpdateUV(FaceUV,VertexUV):
     global Polygon
-    global VertexUV
-    global FaceUV
 
     #UVW TAG FOR THE BEHIND-THE-SCENES POLYGON OBJECT
     if not Polygon.GetTag(c4d.Tuvw):
@@ -602,25 +604,22 @@ def UpdateUV():
 
     for i in range(Polygon.GetPolygonCount()):
 
-        a = FaceUV[i][0]
+        a = FaceUV[i][0]-1
+        
         ca = VertexUV[a]
-        va = c4d.Vector(ca[0],ca[1],0)
 
-        b = FaceUV[i][1]
+        va = c4d.Vector(ca[0],1-ca[1],0)
+
+        b = FaceUV[i][1]-1
         cb = VertexUV[b]
-        vb = c4d.Vector(cb[0],cb[1],0)
+        
+        vb = c4d.Vector(cb[0],1-cb[1],0)
 
-        c = FaceUV[i][2]
+        c = FaceUV[i][2]-1
         cc = VertexUV[c]
-        vc = c4d.Vector(cc[0],cc[1],0)
-
-        d = FaceUV[i][0]
-
-        if len(FaceUV[i])>3:
-            d = FaceUV[i][3]
-
-        cd = VertexUV[d]
-        vd = c4d.Vector(cd[0],cd[1],0)
+        vc = c4d.Vector(cc[0],1-cc[1],0)
+        
+        vd = c4d.Vector(cc[0],1-ca[1],0)
 
         uvwTag.SetSlow(i,va,vb,vc,vd)
         op_uvwTag.SetSlow(i,va,vb,vc,vd)

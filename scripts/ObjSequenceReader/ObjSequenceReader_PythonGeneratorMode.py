@@ -549,11 +549,25 @@ def UpdateMaterial():
 
     if not _mat:
         _mat = hm.CreateMaterial("OBJ Sequence Material", [c4d.CHANNEL_LUMINANCE])
+        
+        #_mat = c4d.Material()
+        #_mat.SetName("OBJ Sequence Material")
+        #_mat.SetChannelState(c4d.CHANNEL_COLOR,False)
+        #_mat.SetChannelState(c4d.CHANNEL_LUMINANCE,True)
+
         hm.ApplyShader(shader, _mat, "Luminance")
+        
+        #_mat[c4d.MATERIAL_LUMINANCE_SHADER] = shader
+        #_mat.InsertShader(shader)
+
         doc.InsertMaterial(_mat)
     
     if _tag == None:
         _tag = hm.ApplyMaterial(Polygon, _mat, "OBJ Sequence Texture Tag", True)
+        #_tag = c4d.TextureTag()
+        #_tag.SetMaterial(_mat)
+        #_tag.SetName("OBJ Sequence Texture Tag")
+        #Polygon.InsertTag(_tag)
     
     _optags = [t for t in op.GetTags() if t.GetType() == c4d.Ttexture]
     _optag = None
@@ -591,18 +605,28 @@ def UpdateUV(FaceUV,VertexUV):
     for i in range(Polygon.GetPolygonCount()):
 
         a = FaceUV[i][0]-1
+        
         ca = VertexUV[a]
+
         va = c4d.Vector(ca[0],1-ca[1],0)
 
         b = FaceUV[i][1]-1
         cb = VertexUV[b]
+        
         vb = c4d.Vector(cb[0],1-cb[1],0)
 
         c = FaceUV[i][2]-1
         cc = VertexUV[c]
         vc = c4d.Vector(cc[0],1-cc[1],0)
         
-        vd = c4d.Vector(cc[0],1-ca[1],0)
+
+        d = FaceUV[i][2]-1
+        
+        if len(FaceUV[i])>3:
+            d = FaceUV[i][3]-1
+        
+        cd = VertexUV[d]
+        vd = c4d.Vector(cd[0],1-cd[1],0)
 
         uvwTag.SetSlow(i,va,vb,vc,vd)
         op_uvwTag.SetSlow(i,va,vb,vc,vd)

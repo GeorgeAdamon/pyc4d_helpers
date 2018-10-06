@@ -3,6 +3,7 @@ import os
 import re
 import math
 import random
+from pyc4d_helpers import Hierarchy as hi
 from pyc4d_helpers import UserData as ud
 from pyc4d_helpers import Materials as hm
 from pyshull import pyshull as hull
@@ -26,38 +27,44 @@ max_Frame = 0
 digitCount = 0
 
 shader = hm.CreateShader(c4d.Xvertexmap, "OBJ Vertex Colors Shader")
-Polygon = c4d.BaseObject(c4d.Opolygon)
 
+OutputObject = c4d.BaseObject(c4d.Onull)
 
 # ====================== UI FUNCTIONS ======================================= #
 def SetupUserData():
-    #1
+    #==================== 1: FILE HANDLING UI==================================#
+    #1.1: UI Header
     if not ud.UserDataExists(op,"File Handling"):
         ud.CreateUserData(op,"File Handling", c4d.DTYPE_SEPARATOR)
-    #2
+    #1.2: "Filename" text box
     if not ud.UserDataExists(op,"First Object FileName"):
         ud.CreateUserData(op,"First Object FileName", c4d.DTYPE_FILENAME, True)
-    #3
+    #1.3: "Load All" Boolean, determines whether to load all files in the folder at once
+    if not ud.UserDataExists(op,"Load All"):
+        ud.CreateUserData(op,"Load All", c4d.DTYPE_BOOL)
+    #1.4
     if not ud.UserDataExists(op,"First Frame"):
         ud.CreateIntegerData(op,"First Frame", "Integer")
-    #4
+    #1.5
     if not ud.UserDataExists(op,"Last Frame"):
         ud.CreateIntegerData(op,"Last Frame", "Integer")
-    #5
+    #1.6
     if not ud.UserDataExists(op,"Frame Step"):
         ud.CreateIntegerData(op,"Frame Step", "Integer Slider")
         ud.SetUserDataValue(op, "Frame Step", 1)
-    #6
+    #1.7
     if not ud.UserDataExists(op,"Frame Offset"):
         ud.CreateIntegerData(op,"Frame Offset", "Integer Slider")
         ud.SetUserDataValue(op, "Frame Offset", 0)
-    #7
+    #1.8
     if not ud.UserDataExists(op,"After Last Frame"):
         ud.CreateDropDown(op,"After Last Frame", "Cycle", ["Freeze", "Loop", "Ping Pong", "Disappear"])
         ud.SetUserDataValue(op, "After Last Frame", 0)
-    #8
+    #1.9
     if not ud.UserDataExists(op,"File Handling Message"):
         ud.CreateUserData(op,"File Handling Message", c4d.DTYPE_STATICTEXT, True)
+    
+    #==================== 2: MESH HANDLING UI==================================#
     #9
     if not ud.UserDataExists(op,"Mesh Handling"):
         ud.CreateUserData(op,"Mesh Handling", c4d.DTYPE_SEPARATOR)
@@ -82,6 +89,8 @@ def SetupUserData():
     #16
     if not ud.UserDataExists(op,"Faces"):
         ud.CreateUserData(op,"Faces", c4d.DTYPE_STATICTEXT, True)
+
+    #==================== COORDINATE HANDLING UI==================================#
     #17
     if not ud.UserDataExists(op,"Coordinate Handling"):
         ud.CreateUserData(op,"Coordinate Handling", c4d.DTYPE_SEPARATOR)
@@ -108,7 +117,7 @@ def SplitPath(path):
 
     return directory, fullname, name, extension
 
-def ResolveFilename(filename):
+def ResolveFilename(filename, Frame = -1):
 
     """
     Accepts a provided FileName pointng to the first object of the sequence to import, and figures out the apporppriate filename to load based on the current animation 
@@ -192,7 +201,10 @@ def ResolveFilename(filename):
             ud.SetUserDataValue(op, "First Frame", int(min_Frame))
             ud.SetUserDataValue(op, "Last Frame", int(max_Frame))
 
-        formatted_frame = ConstructFrame()
+        if Frame <= -1:
+            formatted_frame = ConstructFrame()
+        else:
+            formatted_frame = ConstructFrame(Frame)
 
         if formatted_frame != -1:
             Path = os.path.join(directory, nonDigitName + formatted_frame + extension )
@@ -207,10 +219,10 @@ def ResolveFilename(filename):
         return
 
 # ====================== CURRENT FRAME MANIPULATOR FUNCTIONS ================ #
-def ConstructFrame():
+def ConstructFrame(Frame = -1):
 
     """
-        Accepts a provided FileName pointng to the first object of the sequence to import, and figures out the apporppriate filename to load based on the current animation 
+        Accepts a provided FileName pointing to the first object of the sequence to import, and figures out the apporppriate filename to load based on the current animation 
         frame.
 
         Args:
@@ -222,44 +234,47 @@ def ConstructFrame():
     global max_Frame
     global digitCount
 
-    first = max(ud.GetUserDataValue(op, "First Frame"), min_Frame)
-    last = min(ud.GetUserDataValue(op, "Last Frame"), max_Frame)
+    if Frame <= -1:
+        first = max(ud.GetUserDataValue(op, "First Frame"), min_Frame)
+        last = min(ud.GetUserDataValue(op, "Last Frame"), max_Frame)
 
-    ud.SetUserDataValue(op, "First Frame", first)
-    ud.SetUserDataValue(op, "Last Frame", last)
+        ud.SetUserDataValue(op, "First Frame", first)
+        ud.SetUserDataValue(op, "Last Frame", last)
 
-    step = ud.GetUserDataValue(op, "Frame Step")
-    offset = ud.GetUserDataValue(op, "Frame Offset")
-    after = ud.GetUserDataValue(op, "After Last Frame")
+        step = ud.GetUserDataValue(op, "Frame Step")
+        offset = ud.GetUserDataValue(op, "Frame Offset")
+        after = ud.GetUserDataValue(op, "After Last Frame")
 
-    frame = doc.GetTime().GetFrame(doc.GetFps()) + offset
+        frame = doc.GetTime().GetFrame(doc.GetFps()) + offset
 
-    if frame%step != 0:
-        frame = frame - (frame%step) #Frame skipping
-    
-    if after == 0:
-        if last <= first:
-            frame = max(frame,first) #open ended sequence, no max limit
-        else:
-            frame = max(min(frame,last),first) # Min and Max limit applied
-    elif after == 1:
-        frame = frame%last
-
-    elif after == 2:
-        if (frame//last)%2 == 0:
+        if frame%step != 0:
+            frame = frame - (frame%step) #Frame skipping
+        
+        if after == 0:
+            if last <= first:
+                frame = max(frame,first) #open ended sequence, no max limit
+            else:
+                frame = max(min(frame,last),first) # Min and Max limit applied
+        elif after == 1:
             frame = frame%last
-        else:
-            frame = last - (frame%last)
-    elif after == 3:
-        if frame>last or frame<first:
-            return -1
+
+        elif after == 2:
+            if (frame//last)%2 == 0:
+                frame = frame%last
+            else:
+                frame = last - (frame%last)
+        elif after == 3:
+            if frame>last or frame<first:
+                return -1
+    else:
+        frame = Frame
+
     formatted_frame = str(frame).zfill(digitCount) # Fill number with zeros if necessary
 
     return formatted_frame
 
 # ====================== UTILITY FUNCTIONS FOR MANIPULATING NORMAL TAG ====== #
 # Obtained From: http://www.plugincafe.com/forum/forum_posts.asp?TID=9752&PID=38672#38672
-
 def float2bytes(f):
     int_value = int(math.fabs(f * 32000.0))
     high_byte = int(int_value / 256)
@@ -287,7 +302,6 @@ def set_normals(normal_tag,polygon,normal_a,normal_b,normal_c,normal_d):
 
             normal_buffer[normal_tag.GetDataSize()*polygon+v*vector_size+c*component_size+0] = chr(low_byte)
             normal_buffer[normal_tag.GetDataSize()*polygon+v*vector_size+c*component_size+1] = chr(high_byte)
-
 
 # ====================== OBJ PARSING CORE CODE ============================== #
 def ParseObj(filename, swapyz=False, flipz= False , scale = 1.0):
@@ -385,17 +399,18 @@ def ParseObj(filename, swapyz=False, flipz= False , scale = 1.0):
     return vertices, faces, vertexColors, vertexNormals, vertexTextureCoords, facesNormals, facesTextureCoords
 
 # ====================== TOP LEVEL CODE ===================================== #
-def ImportToCinema():
-        global Polygon
+def ImportToCinema(PATH):
+        #global Polygon
+        global OutputObject
         global runcount
         global prev_filename
 
-        SetupUserData()
+        #SetupUserData()
 
-        PATH =  ResolveFilename(ud.GetUserDataValue(op, "First Object FileName"))
+        #PATH =  ResolveFilename(ud.GetUserDataValue(op, "First Object FileName"))
         
         if PATH != None and PATH != -1:
-
+            
             N = os.path.basename(PATH)
             
             FaceUV = []
@@ -409,16 +424,16 @@ def ImportToCinema():
             Polygon.ResizeObject(len(Vertices),len(Faces)) #New number of points, New number of polygons
             Polygon.SetName(N)
 
-            UpdateVertexCoordinates(Vertices)
-            UpdateFaces(Faces)
+            UpdateVertexCoordinates(Polygon, Vertices)
+            UpdateFaces(Polygon, Faces) 
             
             if len(FaceUV)>0:
-                UpdateUV(FaceUV,VertexUV)
+                UpdateUV(Polygon, FaceUV,VertexUV)
             
             if ud.GetUserDataValue(op, "Import Vertex Colors"):
-                UpdateVertexColors(Colors)
+                UpdateVertexColors(Polygon, Colors)
                 if  ud.GetUserDataValue(op,"Create Test Material"):
-                    UpdateMaterial()
+                    UpdateMaterial(Polygon)
 
             if ud.GetUserDataValue(op, "Phong Smoothing"):
                 Polygon.CreatePhongNormals()
@@ -443,7 +458,9 @@ def ImportToCinema():
             runcount += 1
             prev_filename = ud.GetUserDataValue(op, "First Object FileName")
 
-            return Polygon
+            Polygon.InsertUnder(OutputObject)
+
+            return
         elif PATH == -1:
             msg = "Outside of Frame Range."
             ud.SetUserDataValue(op,"Mesh Handling Message", msg)
@@ -454,12 +471,12 @@ def ImportToCinema():
             return
 
 # ====================== UPDATING FUNCTIONS ================================= #
-def UpdateVertexCoordinates(Vertices):
-    global Polygon
+def UpdateVertexCoordinates(_Polygon, Vertices):
+    #global Polygon
     global maxX, maxY, maxZ, minX, minY, minZ
 
     for i,vert in enumerate(Vertices):
-        Polygon.SetPoint(i,c4d.Vector(vert[0], vert[1], vert[2]))
+        _Polygon.SetPoint(i,c4d.Vector(vert[0], vert[1], vert[2]))
 
         if vert[1] > maxY:
             maxY = vert[1]
@@ -479,15 +496,15 @@ def UpdateVertexCoordinates(Vertices):
         if vert[2] < minZ:
             minZ = vert[2]
 
-def UpdateVertexColors(Colors):
-    global Polygon
+def UpdateVertexColors(_Polygon, Colors):
+    #global Polygon
 
     #VERTEX TAG FOR THE BEHIND-THE-SCENES POLYGON OBJECT
-    if not Polygon.GetTag(c4d.Tvertexcolor):
-        colorTag = c4d.VertexColorTag(Polygon.GetPointCount())
-        Polygon.InsertTag(colorTag)
+    if not _Polygon.GetTag(c4d.Tvertexcolor):
+        colorTag = c4d.VertexColorTag(_Polygon.GetPointCount())
+        _Polygon.InsertTag(colorTag)
     else:
-        colorTag = Polygon.GetTag(c4d.Tvertexcolor)
+        colorTag = _Polygon.GetTag(c4d.Tvertexcolor)
 
     data = c4d.VertexColorTag.GetDataAddressW(colorTag)
 
@@ -502,15 +519,15 @@ def UpdateVertexColors(Colors):
     data2= c4d.VertexColorTag.GetDataAddressW(opTag)
 
 
-    for i in range(Polygon.GetPointCount()):
+    for i in range(_Polygon.GetPointCount()):
         if i<len(Colors):
             r = Colors[i][0]
             g = Colors[i][1]
             b = Colors[i][2]
         else:
-            r = (Polygon.GetPoint(i)[0] - minX) /(maxX-minX)
-            g = (Polygon.GetPoint(i)[1] - minY) /(maxY-minY)
-            b = (Polygon.GetPoint(i)[2] - minZ) /(maxZ-minZ)
+            r = (_Polygon.GetPoint(i)[0] - minX) /(maxX-minX)
+            g = (_Polygon.GetPoint(i)[1] - minY) /(maxY-minY)
+            b = (_Polygon.GetPoint(i)[2] - minZ) /(maxZ-minZ)
 
         col = c4d.Vector(r,g,b)
        
@@ -519,8 +536,8 @@ def UpdateVertexColors(Colors):
     
     shader[c4d.SLA_DIRTY_VMAP_OBJECT] = colorTag
 
-def UpdateFaces(Faces):
-    global Polygon
+def UpdateFaces(_Polygon,Faces):
+    #global Polygon
 
     for i, face in enumerate(Faces):
         if len(face)>2:
@@ -529,17 +546,17 @@ def UpdateFaces(Faces):
             C =face[2]-1
                 
         if len(face)==3:
-            Polygon.SetPolygon(i, c4d.CPolygon(A,B,C) ) #The Polygon's index, Polygon's points
+            _Polygon.SetPolygon(i, c4d.CPolygon(A,B,C) ) #The Polygon's index, Polygon's points
         elif len(face)==4:
             D = face[3]-1
-            Polygon.SetPolygon(i, c4d.CPolygon(A,B,C,D) )
+            _Polygon.SetPolygon(i, c4d.CPolygon(A,B,C,D) )
 
-def UpdateMaterial():
-    global Polygon
+def UpdateMaterial(_Polygon):
+    #global Polygon
     global shader
 
     _mat = doc.SearchMaterial("OBJ Sequence Material")
-    _tags = [t for t in Polygon.GetTags() if t.GetType() == c4d.Ttexture]
+    _tags = [t for t in _Polygon.GetTags() if t.GetType() == c4d.Ttexture]
     _tag = None
 
     for t in _tags:
@@ -563,7 +580,7 @@ def UpdateMaterial():
         doc.InsertMaterial(_mat)
     
     if _tag == None:
-        _tag = hm.ApplyMaterial(Polygon, _mat, "OBJ Sequence Texture Tag", True)
+        _tag = hm.ApplyMaterial(_Polygon, _mat, "OBJ Sequence Texture Tag", True)
         #_tag = c4d.TextureTag()
         #_tag.SetMaterial(_mat)
         #_tag.SetName("OBJ Sequence Texture Tag")
@@ -585,15 +602,15 @@ def UpdateMaterial():
         _optag = _tag.GetClone()
         _optag.SetName("OBJ Sequence Texture Tag")
 
-def UpdateUV(FaceUV,VertexUV):
-    global Polygon
+def UpdateUV(_Polygon,FaceUV,VertexUV):
+    #global Polygon
 
     #UVW TAG FOR THE BEHIND-THE-SCENES POLYGON OBJECT
-    if not Polygon.GetTag(c4d.Tuvw):
-        uvwTag = c4d.UVWTag(Polygon.GetPolygonCount())
-        Polygon.InsertTag(uvwTag)
+    if not _Polygon.GetTag(c4d.Tuvw):
+        uvwTag = c4d.UVWTag(_Polygon.GetPolygonCount())
+        _Polygon.InsertTag(uvwTag)
     else:
-        uvwTag = Polygon.GetTag(c4d.Tuvw)
+        uvwTag = _Polygon.GetTag(c4d.Tuvw)
 
     #UVW TAG FOR THE PYTHON GENERATOR OBJECT
     if not op.GetTag(c4d.Tuvw):
@@ -602,7 +619,7 @@ def UpdateUV(FaceUV,VertexUV):
     else:
         op_uvwTag = op.GetTag(c4d.Tuvw)
 
-    for i in range(Polygon.GetPolygonCount()):
+    for i in range(_Polygon.GetPolygonCount()):
 
         a = FaceUV[i][0]-1
         
@@ -631,15 +648,34 @@ def UpdateUV(FaceUV,VertexUV):
         uvwTag.SetSlow(i,va,vb,vc,vd)
         op_uvwTag.SetSlow(i,va,vb,vc,vd)
 
+
 #prev        = type("", (), {})()     # create a new empty type and instantiate it
 #prev.frame  = 0
 #prev.cache  = None           
 
 def main():
+    global OutputObject
     global runcount
-    op.SetName("--- OBJ Sequence Reader by George Adamon ---")
-    return ImportToCinema()
+    global min_Frame
+    global max_Frame
 
+    op.SetName("--- OBJ Sequence Reader by George Adamon ---")
+    
+    SetupUserData()
+
+    OutputObject = c4d.BaseObject(c4d.Onull)
+
+    multifile = ud.GetUserDataValue(op, "Load All")
+    if not multifile:
+        currentPath = ResolveFilename(ud.GetUserDataValue(op, "First Object FileName"))
+        ImportToCinema(currentPath)
+    else:
+        for i in range(min_Frame, max_Frame):
+            currentPath = ResolveFilename(ud.GetUserDataValue(op, "First Object FileName"), i)
+            ImportToCinema(currentPath)
+
+    print str.format("The generator has run {0} times.", runcount)
+    return OutputObject
     #frame   = doc.GetTime().GetFrame(doc.GetFps())
     #if frame != prev.frame:
     #    prev.frame  = frame

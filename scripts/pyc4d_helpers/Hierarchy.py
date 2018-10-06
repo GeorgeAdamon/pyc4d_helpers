@@ -4,15 +4,25 @@ import c4d.documents as docs
 global DOC
 DOC = docs.GetActiveDocument()
 
+
 def SelectObject(obj):
+    """
+    Selects the specified object in the Hierarchy.
+    """
     obj.SetBit(c4d.BIT_ACTIVE)
     return
 
 def DeselectObject(obj):
+    """
+    Deselects the specified object from the Hierarchy.
+    """
     obj.DelBit(c4d.BIT_ACTIVE)
     return
 
 def SelectChildren(obj, recursive = True, deselect_parent = True):
+    """
+    Recursively selects all the children of the specified object
+    """
     if recursive:
         DOC.StartUndo()
         SelectChildren_RecursionHelper(obj,obj.GetNext())
@@ -32,6 +42,16 @@ def SelectChildren(obj, recursive = True, deselect_parent = True):
         DOC.EndUndo()
     return
 
+def DeleteChildren(obj):
+    """
+    Deletes all the immediate children of the specified object.
+    """
+    children = obj.GetChildren()
+
+    for child in children:
+        child.Remove()
+
+# ============== HELPER FUNCTIONS ================
 def SelectChildren_RecursionHelper(obj, next):
     while obj and obj != next: #while we are not in the end of this object's hierarchy
 

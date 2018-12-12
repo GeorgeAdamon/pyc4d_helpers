@@ -267,7 +267,7 @@ def CreateFilepath(obj, itemName = "Filepath", overwrite = False):
         else:
             DestroyUserData(obj,itemName)
     
-    BaseContainer = c4d.GetCustomDatatypeDefault(c4d.c4d.DTYPE_FILENAME)
+    BaseContainer = c4d.GetCustomDatatypeDefault(c4d.DTYPE_FILENAME)
     BaseContainer[c4d.DESC_NAME] = itemName
     BaseContainer[c4d.DESC_SHORT_NAME] = itemName
    

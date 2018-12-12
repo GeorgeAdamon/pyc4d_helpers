@@ -243,12 +243,41 @@ def CreateButton (obj, itemName="Buton", overwrite=False):
 
     item = obj.AddUserData(BaseContainer)
 
+    
+def CreateLink(obj, itemName = "Link", overwrite = False):
+     """
+    Create a new UserData item of type "Link" and add it to the UserDataContainer of the specified object.
+
+    Args:
+        obj (c4d.BaseObject): The Cinema4D object to add UserData to.
+        [optional] itemName (str): The name of the UserData item to be created. Default is "Link".
+        [optional] overwrite: Whether to overwrite any existing identical UserData. False by default.
+    Returns:
+        True on success, False on failure
+    """
+    if obj==None: return False
+
+    UserData = obj.GetUserDataContainer()
+
+    if itemName == None: itemName = "Link" + str(len(UserData))
+
+    if UserDataExists(obj,itemName):
+        if overwrite==False: 
+            return False
+        else:
+            DestroyUserData(obj,itemName)
+    
+    BaseContainer = c4d.GetCustomDatatypeDefault(c4d.c4d.DTYPE_FILENAME)
+    BaseContainer[c4d.DESC_NAME] = itemName
+    BaseContainer[c4d.DESC_SHORT_NAME] = itemName
+   
+    item = obj.AddUserData(BaseContainer)
+
     #Do NOT call c4d.EventAdd() if you use this function inside a Python Generator object, or inside a Python tag. Strange things will happen.
     #if not ( op.GetType() == 1023866 or op.GetType()== 1022749 ):
     #    c4d.EventAdd()
 
     return True
-
 
 # ===================== USER DATA SEARCH FUNCTIONS ============================================== #
 def GetAllUserData(obj):

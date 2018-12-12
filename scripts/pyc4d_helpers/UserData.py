@@ -244,13 +244,13 @@ def CreateButton (obj, itemName="Buton", overwrite=False):
     item = obj.AddUserData(BaseContainer)
 
     
-def CreateLink(obj, itemName = "Link", overwrite = False):
+def CreateFilepath(obj, itemName = "Filepath", overwrite = False):
      """
     Create a new UserData item of type "Link" and add it to the UserDataContainer of the specified object.
 
     Args:
         obj (c4d.BaseObject): The Cinema4D object to add UserData to.
-        [optional] itemName (str): The name of the UserData item to be created. Default is "Link".
+        [optional] itemName (str): The name of the UserData item to be created. Default is "Filepath".
         [optional] overwrite: Whether to overwrite any existing identical UserData. False by default.
     Returns:
         True on success, False on failure
@@ -259,7 +259,7 @@ def CreateLink(obj, itemName = "Link", overwrite = False):
 
     UserData = obj.GetUserDataContainer()
 
-    if itemName == None: itemName = "Link" + str(len(UserData))
+    if itemName == None: itemName = "Filepath" + str(len(UserData))
 
     if UserDataExists(obj,itemName):
         if overwrite==False: 

@@ -378,7 +378,7 @@ def DestroyUserData(obj, itemName):
                 obj.RemoveUserData(i) #The actual object contained in the UserData item
                 return True
 
-def DestroyAllUserData(obj, itemName):
+def DestroyAllUserData(obj):
 
     if obj==None: return False
 

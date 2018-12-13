@@ -7,7 +7,7 @@ Topics covered so far:
   - UserData Handling (adding, removing, searching, setting)
   - Material and Shader Creation
   - Hierarchy Navigation (Selecting, Deselecting, Selecting Children etc)
-  - [OBJ Sequence Importing](https://github.com/GeorgeAdamon/pyc4d_helpers/tree/master/scripts/ObjSequenceReader)
+  - [OBJ Sequential / Batch Importing](https://github.com/GeorgeAdamon/pyc4d_helpers/tree/master/scripts/ObjSequenceReader)
   - [Importing Transformation Matrices From Other Software](https://github.com/GeorgeAdamon/pyc4d_helpers/tree/master/scripts/RhinoMatrixLoader)
 
 ### Installation Notes

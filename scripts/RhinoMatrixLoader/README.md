@@ -86,5 +86,13 @@ and in Cinema4D terminology:
 | off.z |  v1.z |  v2.z |  v2.z |
 
 #### Finally
-Thus, the main 
+Thus, the main transformation that is taking place is:
+
+``` 
+m = c4d.Matrix()
+m.v1  = c4d.Vector( X[0]  , Z[0]  , Y[0]    )
+m.v2  = c4d.Vector( X[1]  , Z[1]  , Y[1]    )
+m.v3  = c4d.Vector( X[2]  , Z[2]  , Y[2]    )
+m.off = c4d.Vector( POS[0], POS[2], POS[1]  )
+```
 

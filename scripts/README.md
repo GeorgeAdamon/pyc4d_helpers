@@ -1,8 +1,6 @@
 
-# Installation Notes
-## pyc4d_helpers Scripts
-### Installation
-In order to be able to use the functions inside the Cinema4D Python Editor, you need to copy/paste the **pyc4d_helpers** folder in: 
+### Installation Notes
+In order to be able to use the pyc4d_helpers functions inside Cinema4D, you need to copy/paste the **pyc4d_helpers** folder in: 
 
 * For versions prior to R20: *Your Cinema4D Preferences Folder* / library / python / packages / *your operating system*
 * For R20 or later: *Your Cinema4D Preferences Folder* /python27/libs

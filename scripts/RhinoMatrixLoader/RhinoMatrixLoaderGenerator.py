@@ -1,5 +1,6 @@
 import c4d
 import math
+import os
 from pyc4d_helpers import UserData as ud
 from pyc4d_helpers import Matrices as mtr
 
@@ -11,7 +12,7 @@ filePath = ""
 fileName = ""
 isQuad = True
 size = 1
-mesh = c4d.PolygonObject(0,0)
+referencedCloner = None
 
 # ==========================  CACHED FUNCTIONS  ============================== #
 
@@ -61,16 +62,18 @@ def ReadUserData():
     global fileName
     global isQuad
     global size
+    global referencedCloner
 
     fileContainsHeaders = ud.GetUserDataValue(op, "Data Has Headers")
     filePath = ud.GetUserDataValue(op, "Transformation Matrices File")
-    fileName = os.path.basename(filepath).split(".")[0]
-    isQuad = ud.GetUserDataValue(op, "Display Matrices As") == "Quad"
+    fileName = os.path.basename(filePath).split(".")[0]
+    isQuad = ud.GetUserDataValue(op, "Display Matrices As") == 0
     size =  ud.GetUserDataValue(op, "Display Size")
+    referencedCloner = ud.GetUserDataValue(op, "Attach to Cloner")
 
 def ReadFile(filepath, headers = True, color = None):
     """
-    Reads a CSV (Comma-Separated-Values) file that contains transformation 
+    Reads a CSV (Comma-Separated-Values) file that contains transformation
     matrices. The 4X4_Matrix values as they come from Rhino/Grasshopper,
     should be in a 1D list of 16 elements, structured like that:
     | M00 | M01 | M02 | M03 | M10 | M11 | M12 | M13 |M20 | M21 | M22 | M23 | M30 | M31 | M32 | M33 |
@@ -101,13 +104,9 @@ def ReadFile(filepath, headers = True, color = None):
         if headers:
             _matrices = map( Rh2C4d, [ [float(v) for v in line.split(',')] for line in f.readlines()[1:] ] )
         else:
-            _matrices = map( Rh2C4d, [ [float(v) for v in line.split(',')] for line in f.readlines() ] ) 
+            _matrices = map( Rh2C4d, [ [float(v) for v in line.split(',')] for line in f.readlines() ] )
 
-    return _matrices          
-
-def SetupNames():
-    global fileName
-    op.SetName("Rhino Matrix Loader: " + fileName)
+    return _matrices
 
 # ============================ UTILITY FUNCTIONS ============================= #
 def Centroid(points):
@@ -153,7 +152,7 @@ def TransformVertices(_vertices, matrix):
 def GenerateMeshFromMatrices(_matrices, _size = 1, _quad = True):
 
     # QUAD MESH
-    if _quad == 0:
+    if _quad:
         verticesPerFace = 4
         baseVertices = CreateRectangleVertices(_size)
     # TRIANGLE MESH
@@ -168,20 +167,20 @@ def GenerateMeshFromMatrices(_matrices, _size = 1, _quad = True):
 
     # Setup Mesh Lists
     mesh = c4d.PolygonObject(vertexCount, faceCount)
-    vertices = [] * vertexCount
-    faces = [] * faceCount
-
+    vertices = [None] * vertexCount
+    faces = [None] * faceCount
 
     # Iterate through the matrices and transform the vertices accordingly
     for i,m in enumerate(_matrices):
         cnt = i * verticesPerFace
-        
+
         if _quad:
             vertices[cnt : cnt + 4] = TransformVertices(baseVertices, m)
             faces[i] = c4d.CPolygon( cnt+0, cnt+1, cnt+2, cnt+3)
         else:
             vertices[cnt : cnt + 3] = TransformVertices(baseVertices, m)
             faces[i] = c4d.CPolygon( cnt+0, cnt+1, cnt+2)
+
 
     # Translate the matrix of the mesh object to the centroid of the vertices
     centroid = Centroid(vertices)
@@ -191,7 +190,7 @@ def GenerateMeshFromMatrices(_matrices, _size = 1, _quad = True):
     vertices = [v-centroid for v in vertices]
 
     # Set the mesh vertices
-    mesh.SetAllPoints(verts)
+    mesh.SetAllPoints(vertices)
 
     # Set the mesh faces
     for i,f in enumerate(faces):
@@ -200,20 +199,34 @@ def GenerateMeshFromMatrices(_matrices, _size = 1, _quad = True):
     # Update the object
     mesh.Message (c4d.MSG_UPDATE)
 
+    return mesh
+
 def main():
     global matrices
     global fileContainsHeaders
     global size
     global isQuad
+    global referencedCloner
+    global fileName
 
     SetupUserData()
 
     ReadUserData()
 
-    matrices = ReadFile(filePath, fileContainsHeaders)
+    if filePath is not "":
+        matrices = ReadFile(filePath, fileContainsHeaders)
+        
+        op.SetName("Rhino Matrix Loader: " + fileName)
+     
+        mesh = GenerateMeshFromMatrices(matrices, size, isQuad)
 
-    SetupNames()
+        if referencedCloner is not None:
+            referencedCloner[c4d.ID_MG_MOTIONGENERATOR_MODE] = 0
+            referencedCloner[c4d.MG_OBJECT_LINK] = mesh
+            referencedCloner[c4d.MG_OBJECT_ALIGN] = True
+            referencedCloner[c4d.MG_POLY_MODE_] = 2
+            referencedCloner.SetName(fileName + "_Cloner")
 
-    return GenerateMeshFromMatrices(matrices, size, isQuad)
-
-
+        return mesh
+    else:
+        return None

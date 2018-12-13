@@ -31,22 +31,24 @@ More explictly, this script expects a .csv file saved from Grasshopper, where ea
 |-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|
 | M00 | M01 | M02 | M03 | M10 | M11 | M12 | M13 | M20 | M21 | M22 | M23 | M30 | M31 | M32 | M33 |
 
-Those values correspond to a Rhino/Grasshopper 4X4 matrix, that was originally structured like that:
+Those values correspond to a Rhino/Grasshopper 4X4 matrix, that was originally structured like that inside Rhino/Grasshopper:
 
-    | M00 | M01 | M02 | M03 |
-    | M10 | M11 | M12 | M13 |
-    | M20 | M21 | M22 | M23 |
-    | M30 | M31 | M32 | M33 |
+|Column 0|Column 1|Column 2|Column 3|
+|-----|-----|-----|-----|
+| M00 | M01 | M02 | M03 |
+| M10 | M11 | M12 | M13 |
+| M20 | M21 | M22 | M23 |
+| M30 | M31 | M32 | M33 |
 
-    and the meaning of it was :
-    | X_Direction.X | X_Direction.Y | X_Direction.Z | X_Pos |
-    | Y_Direction.X | Y_Direction.Y | Y_Direction.Z | Y_Pos |
-    | Z_Direction.X | Z_Direction.Y | Z_Direction.Z | Z_Pos |
-    |       0       |       0       |       0       |   1   |
+and the meaning of it was :
 
-    where X_Direction is the direction of the X Axis (red) of the object,
-    Y_Direction is the direction of the Y Axis (green) of the objects,
-    Z_Direction is the direction of the Z Axis (blue) of the object,
-    and X_Pos,Y_Pos,Z_Pos are the coordinates of the object in World Space
+|Column 0|Column 1|Column 2|Column 3|
+|-----|-----|-----|-----|
+| X_Direction.X | X_Direction.Y | X_Direction.Z | X_Pos |
+| Y_Direction.X | Y_Direction.Y | Y_Direction.Z | Y_Pos |
+| Z_Direction.X | Z_Direction.Y | Z_Direction.Z | Z_Pos |
+|       0       |       0       |       0       |   1   |
+
+where X_Direction is the direction of the X Axis (red) of the object, Y_Direction is the direction of the Y Axis (green) of the objects, Z_Direction is the direction of the Z Axis (blue) of the object, and X_Pos,Y_Pos,Z_Pos are the coordinates of the object in World Space
 
 

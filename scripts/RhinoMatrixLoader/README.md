@@ -16,6 +16,7 @@ _Such a .csv file can be easily created with [MatrixWriter.](https://github.com/
 
 
 ## Usage
+* Make sure you have [installed pyc4d_helpers.](https://github.com/GeorgeAdamon/pyc4d_helpers/tree/master/scripts#installation-notes)
 * Create a Python Generator object.
 * Paste the contents of the script inside the Code field.
 * If all goes well, a UI with options should be created under the Python Generators "User Data" tab.

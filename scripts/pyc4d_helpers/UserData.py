@@ -245,7 +245,7 @@ def CreateButton (obj, itemName="Buton", overwrite=False):
     return True
     
 def CreateFilepath(obj, itemName = "Filepath", overwrite = False):
-     """
+    """
     Create a new UserData item of type "Link" and add it to the UserDataContainer of the specified object.
 
     Args:
@@ -255,6 +255,7 @@ def CreateFilepath(obj, itemName = "Filepath", overwrite = False):
     Returns:
         True on success, False on failure
     """
+
     if obj==None: 
         return False
 

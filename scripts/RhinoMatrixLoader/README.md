@@ -19,7 +19,7 @@ This script is meant to be used inside a Cinema4D Python Generator object, and e
 * You should see a collection of quads or triangles that represent the Transformation Matrices coming from Rhino.
 
 ## Information Regarding [Rhino3d/Grasshopper3d](https://developer.rhino3d.com/api/RhinoCommon/html/T_Rhino_Geometry_Transform.htm) vs [Cinema4D](https://developers.maxon.net/docs/Cinema4DPythonSDK/html/misc/matrixfundamental.html) Transformation Matrices.
-Cinema4D and Rhino/Grasshopper represent 4x4 Transformation Matrices in a different way.
+Cinema4D and Rhino/Grasshopper represent 4x4 Transformation Matrices in an annoyingly different way.
 
 First of all, Rhino has a Z-Up coordinate system, whereas Cinema3D has a Y-Up coordinate system. This means that a Y <--> Z swap has to be performed for every vector of the matrix.
 

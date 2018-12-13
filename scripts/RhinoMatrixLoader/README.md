@@ -86,7 +86,7 @@ and in Cinema4D terminology:
 | off.z |  v1.z |  v2.z |  v2.z |
 
 #### Finally
-Thus, the main transformation that is taking place is:
+Thus, the main swizzling that is taking place is:
 
 ``` 
 m = c4d.Matrix()

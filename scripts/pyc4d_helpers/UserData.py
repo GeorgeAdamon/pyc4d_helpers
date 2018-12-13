@@ -242,7 +242,7 @@ def CreateButton (obj, itemName="Buton", overwrite=False):
     BaseContainer[c4d.DESC_CUSTOMGUI] = c4d.CUSTOMGUI_BUTTON
 
     item = obj.AddUserData(BaseContainer)
-
+    return True
     
 def CreateFilepath(obj, itemName = "Filepath", overwrite = False):
      """
@@ -273,11 +273,11 @@ def CreateFilepath(obj, itemName = "Filepath", overwrite = False):
    
     item = obj.AddUserData(BaseContainer)
 
+    return True
+
     #Do NOT call c4d.EventAdd() if you use this function inside a Python Generator object, or inside a Python tag. Strange things will happen.
     #if not ( op.GetType() == 1023866 or op.GetType()== 1022749 ):
     #    c4d.EventAdd()
-
-    return True
 
 # ===================== USER DATA SEARCH FUNCTIONS ============================================== #
 def GetAllUserData(obj):

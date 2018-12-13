@@ -8,6 +8,7 @@ Topics covered so far:
   - Material and Shader Creation
   - Hierarchy Navigation (Selecting, Deselecting, Selecting Children etc)
   - [OBJ Sequence Importing](https://github.com/GeorgeAdamon/pyc4d_helpers/tree/master/scripts/ObjSequenceReader)
+  - [Importing Transformation Matrices From Other Software]()
 
 ### Installation Notes
 In order to be able to use the pyc4d_helpers functions inside Cinema4D, you need to copy/paste the **pyc4d_helpers** folder in: 

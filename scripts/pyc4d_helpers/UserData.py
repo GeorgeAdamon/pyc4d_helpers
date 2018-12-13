@@ -255,7 +255,8 @@ def CreateFilepath(obj, itemName = "Filepath", overwrite = False):
     Returns:
         True on success, False on failure
     """
-    if obj==None: return False
+    if obj==None: 
+        return False
 
     UserData = obj.GetUserDataContainer()
 

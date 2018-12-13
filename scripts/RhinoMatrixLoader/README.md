@@ -5,8 +5,9 @@ This way, the user can orient native Cinema4D objects using a Cloner that maps t
 
 The advantages of this method, instead of exporting the objects directly from Rhino / Grasshopper as meshes, and using Cinema4d's Fracture object to convert them to Mograph clones are:
 * Objects/Clones retain their original orientation information, instead of assuming the default one.
-* Any type of native Cinema4d object can be used (Lights, Cameras, Fields etc) instead of the basic geometry types that Rhino can export.
+* Any type of native Cinema4d object can be used (Lights, Cameras, Fields etc) instead of just the basic geometry types that Rhino can export.
 * The same map can be used for different Cloners.
+* The file size of the transformation matrices is orders of magnitude smaller, compared to an exported file containing the full geometry.
 
 This script is meant to be used inside a Cinema4D Python Generator object, and expects a .csv text file where each line is a list of 16 elements, separated by comas. See the [In Depth](https://github.com/GeorgeAdamon/pyc4d_helpers/blob/master/scripts/RhinoMatrixLoader/README.md#expected-structure-of-the-csv-file) section below for details.
 
@@ -17,7 +18,7 @@ This script is meant to be used inside a Cinema4D Python Generator object, and e
 * Select the .csv file with the Transformation Matrices.
 * You should see a collection of quads or triangles that represent the Transformation Matrices coming from Rhino.
 
-## Information Regarding Rhino3d/Grasshopper3d vs Cinema4D matrices.
+## Information Regarding [Rhino3d/Grasshopper3d](https://developer.rhino3d.com/api/RhinoCommon/html/T_Rhino_Geometry_Transform.htm) vs [Cinema4D](https://developers.maxon.net/docs/Cinema4DPythonSDK/html/misc/matrixfundamental.html) Transformation Matrices.
 Cinema4D and Rhino/Grasshopper represent 4x4 Transformation Matrices in a different way.
 
 First of all, Rhino has a Z-Up coordinate system, whereas Cinema3D has a Y-Up coordinate system. This means that a Y <--> Z swap has to be performed for every vector of the matrix.

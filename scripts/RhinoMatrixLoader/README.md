@@ -85,4 +85,6 @@ and in Cinema4D terminology:
 | off.y |  v1.y |  v2.y |  v2.y |
 | off.z |  v1.z |  v2.z |  v2.z |
 
+#### Finally
+Thus, the main 
 

@@ -11,7 +11,9 @@ The advantages of this method, instead of exporting the objects directly from Rh
 
 This script is meant to be used inside a Cinema4D Python Generator object, and expects a .csv text file where each line is a list of 16 elements, separated by comas. See the [In Depth](https://github.com/GeorgeAdamon/pyc4d_helpers/blob/master/scripts/RhinoMatrixLoader/README.md#expected-structure-of-the-csv-file) section below for details. 
 
-_Such a .csv file can be easily created with [MatrixWriter](https://github.com/GeorgeAdamon/gh_helpers/blob/master/MatrixWriter.py)_
+
+_Such a .csv file can be easily created with [MatrixWriter.](https://github.com/GeorgeAdamon/gh_helpers/blob/master/MatrixWriter.py)_
+
 
 ## Usage
 * Create a Python Generator object.

@@ -19,12 +19,12 @@ C:\Users\George\AppData\Roaming\MAXON\Cinema 4D R20_4FA5020E\python27\libs
 ## OBJ Sequence Reader Scripts
 
 ### Internal Dependencies
-ObjSequenceReader scripts need the pyc4d_helpers folder to be pasted in: *Your Cinema4D Preferences Folder* / library / python / packages / *your operating system*
+ObjSequenceReader needs the pyc4d_helpers scripts. [See how to install them.](https://github.com/GeorgeAdamon/pyc4d_helpers/blob/master/scripts/README.md#installation)
 
 ### External Dependencies
 ObjSequenceReader scripts need the [pyshull](https://github.com/TimSC/pyshull) library to be pasted in: *Your Cinema4D Preferences Folder* / library / python / packages / *your operating system*
 
-### Installation
+### Usage
 #### ObjSequenceReader_PythonGeneratorMode:
 Create a Python Generator object and load the ObjSequenceReader_PythonGenerator script.
 #### ObjSequenceReader_PythonTagMode:

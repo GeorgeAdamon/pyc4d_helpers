@@ -1,5 +1,5 @@
 # Rhino Matrix Loader (Python Generator)
-A python script that reads a .csv file with 4x4 Transformation Matrices (position, scale, rotation) exported from Rhino3d / Grasshopper3d, and generates a Cinema4D Polygon Object, whose each face represents a matrix.
+A python script that reads a .csv file with [4x4 Transformation Matrices](https://developer.rhino3d.com/api/RhinoCommon/html/T_Rhino_Geometry_Transform.htm) (position, scale, rotation) exported from Rhino3d / Grasshopper3d, and generates a [Cinema4D Polygon Object](https://developers.maxon.net/docs/Cinema4DPythonSDK/html/modules/c4d/C4DAtom/GeListNode/BaseList2D/BaseObject/PointObject/PolygonObject/index.html), whose each face represents a matrix.
 
 This way, the user can orient native Cinema4D objects using a Cloner that maps them to the generated mesh, and use MoGraph effectors on them.
 
@@ -8,7 +8,7 @@ The advantages of this method, instead of exporting the objects directly from Rh
 * Any type of native Cinema4d object can be used (Lights, Cameras, Fields etc) instead of the basic geometry types that Rhino can export.
 * The same map can be used for different Cloners.
 
-This script is meant to be used inside a Cinema4D Python Generator object, and expects a .csv text file where each line is a list of 16 elements, separated by comas. See the In Depth section below for details.
+This script is meant to be used inside a Cinema4D Python Generator object, and expects a .csv text file where each line is a list of 16 elements, separated by comas. See the [In Depth](https://github.com/GeorgeAdamon/pyc4d_helpers/blob/master/scripts/RhinoMatrixLoader/README.md#expected-structure-of-the-csv-file) section below for details.
 
 ## Usage
 * Create a Python Generator object.
@@ -45,7 +45,7 @@ m00,m01,m02,m03,m10,m11,m12,m13,m20,m21,m22,m23,m30,m31,m32,m33
 0.824675,-0.530596,0.195907,5765.35,-0.479792,-0.839669,-0.254471,6194.11,0.299519,0.115861,-0.947029,5237.77,0.0,0.0,0.0,1.0
 ```
 #### Rhino / Grasshopper Matrices
-The above values correspond to a Rhino/Grasshopper 4X4 matrix, that was originally structured like that inside Rhino/Grasshopper:
+The above values correspond to a [Rhino/Grasshopper 4X4 Matrix](https://developer.rhino3d.com/api/RhinoCommon/html/T_Rhino_Geometry_Transform.htm), that was originally structured like that inside Rhino/Grasshopper:
 
 |Column 0|Column 1|Column 2|Column 3|
 |-----|-----|-----|-----|
@@ -66,11 +66,11 @@ and the meaning of it was :
 where X_Direction is the direction of the X Axis (red) of the object, Y_Direction is the direction of the Y Axis (green) of the objects, Z_Direction is the direction of the Z Axis (blue) of the object, and X_Pos, Y_Pos, Z_Pos are the coordinates of the object in World Space.
 
 #### Cinema4d Matrices
-Now in Cinema4D, the 4x4 Matrix structures its vectors vertically, and it looks like this:
+On the other hand, the [Cinema4D 4x4 Matrix](https://developers.maxon.net/docs/Cinema4DPythonSDK/html/misc/matrixfundamental.html) structures its vectors vertically, and it looks like this:
 
 |Column 0|Column 1|Column 2|Column 3|
 |-----|-----|-----|-----|
-|   0   |       0       |       0       |       1       |
+|   1   |       0       |       0       |       0       |
 | X_Pos | X_Direction.X | Y_Direction.X | Z_Direction.X |
 | Y_Pos | X_Direction.Y | Y_Direction.Y | Z_Direction.Y |
 | Z_Pos | X_Direction.Z | Y_Direction.Z | Z_Direction.Z |
@@ -79,7 +79,7 @@ and in Cinema4D terminology:
 
 |Column 0|Column 1|Column 2|Column 3|
 |-----|-----|-----|-----|
-|   0   |   0   |   0   |   1   |
+|   1   |   0   |   0   |   0   |
 | off.x |  v1.x |  v2.x |  v2.x |
 | off.y |  v1.y |  v2.y |  v2.y |
 | off.z |  v1.z |  v2.z |  v2.z |

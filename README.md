@@ -4,9 +4,9 @@ This repository aims to be a concentrated collection of useful scripts for commo
 Hopefully at some point we won't have to dig into old posts in forums anymore.
 
 Topics covered so far:
-  - UserData Handling (adding, removing, searching, setting)
-  - Material and Shader Creation
-  - Hierarchy Navigation (Selecting, Deselecting, Selecting Children etc)
+  - [UserData Handling (adding, removing, searching, setting)](https://github.com/GeorgeAdamon/pyc4d_helpers/tree/master/scripts/pyc4d_helpers)
+  - [Material and Shader Creation](https://github.com/GeorgeAdamon/pyc4d_helpers/tree/master/scripts/pyc4d_helpers)
+  - [Hierarchy Navigation (Selecting, Deselecting, Selecting Children etc)](https://github.com/GeorgeAdamon/pyc4d_helpers/tree/master/scripts/pyc4d_helpers)
   - [OBJ Sequential / Batch Importing](https://github.com/GeorgeAdamon/pyc4d_helpers/tree/master/scripts/ObjSequenceReader)
   - [Importing Transformation Matrices From Other Software](https://github.com/GeorgeAdamon/pyc4d_helpers/tree/master/scripts/RhinoMatrixLoader)
 

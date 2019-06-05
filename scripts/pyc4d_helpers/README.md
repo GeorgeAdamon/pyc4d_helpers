@@ -1,6 +1,10 @@
 
 # pyc4d_helpers
 
-## UserData
+## Dictionaries
+
+## Hierarchy
 
 ## Materials
+
+## UserData

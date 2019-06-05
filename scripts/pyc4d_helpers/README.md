@@ -9,12 +9,7 @@
 
 ## UserData
 ### Creation
-* #### CreateUserData 
-<br/>obj:
-<br/>itemName:
-<br/>itemtype: 
-<br/>overwrite=False :
-
+* #### CreateUserData (obj,itemName,itemtype,overwrite=False)
 * #### CreateFloatData (obj, itemName="Float", interface=c4d.CUSTOMGUI_REAL, _min=None, _max = None, step=0.01,  units="Real", overwrite=False)
 * #### CreateIntegerData (obj, itemName="Integer", interface=c4d.CUSTOMGUI_LONG, _min=None, _max = None, step=1, overwrite=False)
 * #### CreateDropDown (obj, itemName="DropDown", interface=c4d.CUSTOMGUI_CYCLE, data = ["A", "B", "C"], overwrite=False)

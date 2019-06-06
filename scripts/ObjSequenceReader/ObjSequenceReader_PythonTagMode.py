@@ -4,7 +4,7 @@ import re
 import math
 import random
 from pyc4d_helpers import UserData as ud
-from pyshull import pyshull as hull
+from pyc4d_helpers.external import pyshull as hull
 
 minX = 1000000000000.0
 minY = 1000000000000.0

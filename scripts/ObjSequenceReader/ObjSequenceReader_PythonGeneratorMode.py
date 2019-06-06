@@ -6,7 +6,7 @@ import random
 from pyc4d_helpers import Hierarchy as hi
 from pyc4d_helpers import UserData as ud
 from pyc4d_helpers import Materials as hm
-from pyshull import pyshull as hull
+from pyc4d_helpers.external import pyshull as hull
 
 
 #op[c4d.TPYTHON_FRAME] = True

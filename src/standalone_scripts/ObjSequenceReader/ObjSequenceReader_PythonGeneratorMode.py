@@ -4,10 +4,11 @@ import re
 import math
 import random
 from pyc4d_helpers import Hierarchy as hi
+from pyc4d_helpers.Parsers import OBJ
 from pyc4d_helpers import UserData as ud
 from pyc4d_helpers import Materials as hm
 from pyc4d_helpers.external import pyshull as hull
-
+from os.path import isfile, join, dirname, basename, splitext, exists
 
 #op[c4d.TPYTHON_FRAME] = True
 
@@ -30,90 +31,126 @@ shader = hm.CreateShader(c4d.Xvertexmap, "OBJ Vertex Colors Shader")
 
 OutputObject = c4d.BaseObject(c4d.Onull)
 
-# ====================== UI FUNCTIONS ======================================= #
+
+# ----------------------------------------------------------------------------------------------------------------------
+# UI SETUP FUNCTIONS ---------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 def SetupUserData():
-    #==================== 1: FILE HANDLING UI==================================#
-    #1.1: UI Header
+    """
+    Setup the UI of the Python Generator object
+    """
+    # ------------------------------------------------------------------------------------------------------------------
+    # 1 - FILE HANDLING UI ---------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # 1.1: UI Header
     if not ud.UserDataExists(op,"File Handling"):
         ud.CreateUserData(op,"File Handling", c4d.DTYPE_SEPARATOR)
-    #1.2: "Filename" text box
+    # 1.2: "Filename" text box
     if not ud.UserDataExists(op,"First Object FileName"):
         ud.CreateUserData(op,"First Object FileName", c4d.DTYPE_FILENAME, True)
-    #1.3: "Load All" Boolean, determines whether to load all files in the folder at once
+    # 1.3: "Load All" Boolean, determines whether to load all files in the folder at once
     if not ud.UserDataExists(op,"Load All"):
         ud.CreateUserData(op,"Load All", c4d.DTYPE_BOOL)
-    #1.4
+    # 1.4
     if not ud.UserDataExists(op,"First Frame"):
         ud.CreateIntegerData(op,"First Frame", "Integer")
-    #1.5
+    # 1.5
     if not ud.UserDataExists(op,"Last Frame"):
         ud.CreateIntegerData(op,"Last Frame", "Integer")
-    #1.6
+    # 1.6
     if not ud.UserDataExists(op,"Frame Step"):
         ud.CreateIntegerData(op,"Frame Step", "Integer Slider")
         ud.SetUserDataValue(op, "Frame Step", 1)
-    #1.7
+    # 1.7
     if not ud.UserDataExists(op,"Frame Offset"):
         ud.CreateIntegerData(op,"Frame Offset", "Integer Slider")
         ud.SetUserDataValue(op, "Frame Offset", 0)
-    #1.8
+    # 1.8
     if not ud.UserDataExists(op,"After Last Frame"):
         ud.CreateDropDown(op,"After Last Frame", "Cycle", ["Freeze", "Loop", "Ping Pong", "Disappear"])
         ud.SetUserDataValue(op, "After Last Frame", 0)
-    #1.9
+    # 1.9
     if not ud.UserDataExists(op,"File Handling Message"):
         ud.CreateUserData(op,"File Handling Message", c4d.DTYPE_STATICTEXT, True)
-    
-    #==================== 2: MESH HANDLING UI==================================#
-    #9
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # 2 - MESH HANDLING UI ---------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # 2.1
     if not ud.UserDataExists(op,"Mesh Handling"):
         ud.CreateUserData(op,"Mesh Handling", c4d.DTYPE_SEPARATOR)
-    #10
+    # 2.2
     if not ud.UserDataExists(op,"Phong Smoothing"):
         ud.CreateUserData(op,"Phong Smoothing", c4d.DTYPE_BOOL)
-    #11
+    # 2.3
     if not ud.UserDataExists(op,"Import Vertex Colors"):
         ud.CreateUserData(op,"Import Vertex Colors", c4d.DTYPE_BOOL)
-    #12
+    # 2.4
     if not ud.UserDataExists(op,"Create Test Material"):
         ud.CreateUserData(op,"Create Test Material", c4d.DTYPE_BOOL)
-    #13
+    # 2.5
     if not ud.UserDataExists(op,"Mesh Handling Message"):
         ud.CreateUserData(op,"Mesh Handling Message", c4d.DTYPE_STATICTEXT, True)
-    #14
+    # 2.6
     if not ud.UserDataExists(op,"Vertices"):
         ud.CreateUserData(op,"Vertices", c4d.DTYPE_STATICTEXT, True)
-    #15
+    # 2.7
     if not ud.UserDataExists(op,"Colors"):
         ud.CreateUserData(op,"Colors", c4d.DTYPE_STATICTEXT, True)
-    #16
+    # 2.8
     if not ud.UserDataExists(op,"Faces"):
         ud.CreateUserData(op,"Faces", c4d.DTYPE_STATICTEXT, True)
 
-    #==================== COORDINATE HANDLING UI==================================#
-    #17
+    # ------------------------------------------------------------------------------------------------------------------
+    # 3 - COORDINATE HANDLING UI ---------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
+    # 3.1
     if not ud.UserDataExists(op,"Coordinate Handling"):
         ud.CreateUserData(op,"Coordinate Handling", c4d.DTYPE_SEPARATOR)
-    #18
+    # 3.2
     if not ud.UserDataExists(op,"Swap Y/Z"):
         ud.CreateUserData(op,"Swap Y/Z", c4d.DTYPE_BOOL)
-    #19
+    # 3.3
     if not ud.UserDataExists(op,"Flip Z"):
         ud.CreateUserData(op,"Flip Z", c4d.DTYPE_BOOL)
-    #20
+    # 3.4
     if not ud.UserDataExists(op,"Scale"):
         ud.CreateFloatData(op,"Scale", "Float Slider", 0.0, 1000.0, 0.1)
         ud.SetUserDataValue(op, "Scale", 1)
 
-# ====================== FILE SYSTEM FUNCTIONS ============================== #
-def GetFiles(directory):
-    files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+
+# ----------------------------------------------------------------------------------------------------------------------
+# FILE SYSTEM FUNCTIONS ------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
+def GetFiles(directory, filetype = ""):
+    """
+    Get all the files in a directory
+    Args:
+        directory: Directory to read files from
+        filetype: Optional filetype to look for (has to include the '.' character, for example .obj
+    Returns:
+        A list of filenames with extensions
+    """
+    if not filetype:
+        files = [f for f in os.listdir(directory) if isfile(join(directory, f))]
+    else:
+        files = [f for f in os.listdir(directory) if isfile(join(directory, f)) and splitext(f) == filetype]
+
     return files
 
 def SplitPath(path):
-    directory = os.path.dirname(path) #Directory of the file
-    fullname = os.path.basename(path) #Fullname of the file, including extension
-    name, extension = os.path.splitext(fullname) #Split the actual name from the extension
+    """
+    Split a full path into directory, filename, filename without extension & extension
+    :param path: The path to split
+    :return:
+    """
+    directory = dirname(path) #Directory of the file
+    fullname = basename(path) #Fullname of the file, including extension
+    name, extension = splitext(fullname) #Split the actual name from the extension
 
     return directory, fullname, name, extension
 
@@ -134,91 +171,100 @@ def ResolveFilename(filename, Frame = -1):
     global max_Frame
     global digitCount
 
-    if filename == None or filename == "":
+    # ------------------------------------------------------------------------------------------------------------------
+    # FILE ERROR HANDLING ----------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
+
+    if not filename:
         msg = ">>> Empty Filename. Please provide a link to the FIRST item of the sequence you want to import"
-        ud.SetUserDataValue(op,"File Handling Message", msg)
+        ud.SetUserDataValue(op, "File Handling Message", msg)
         return
 
-    if os.path.exists(filename) == False:
+    if not exists(filename):
         msg = ">>> Invalid FileName. Please provide a link to an existing file or folder."
-        ud.SetUserDataValue(op,"File Handling Message", msg)
+        ud.SetUserDataValue(op, "File Handling Message", msg)
         return
-    
-    if os.path.isfile(filename):
 
-        if runcount != 0:
-            if prev_filename != filename:
-                runcount = 0
-
-        directory, fullname, name, extension = SplitPath(filename)
-        
-        if extension != ".obj":
-            msg = ">>> Invalid FileType. Please provide an .obj file."
-            ud.SetUserDataValue(op,"File Handling Message", msg)
-            return
-
-        parts = filter(None, re.split(r'(\d+)', name)) # Split the digit and non-digit parts of the name
-        
-        if parts[-1].isdigit(): #if the last part is digit, use it
-            digit = parts[-1]
-        else:
-            msg = ">>> Invalid Naming Convention. Please make sure that no other characters exist after your file numbering."
-            ud.SetUserDataValue(op,"File Handling Message", msg)
-            return
-
-        if len(parts[:-1])>1:
-            nonDigitName =  " ".join(parts[:-1]).replace(" ","")
-        else:
-            nonDigitName = parts[0]
-        
-        if runcount == 0:
-            files = GetFiles(directory)
-
-            for f in files:
-
-                _d,_f,_n,_e = SplitPath(f)
-
-                if _e == ".obj":
-
-                    _parts = filter(None, re.split(r'(\d+)', _n)) # Split the digit and non-digit parts of the name
-
-                    if len(_parts[:-1])>1:
-                        _nonDigitName =  " ".join(_parts[:-1]).replace(" ","")
-                    else:
-                        _nonDigitName = _parts[0]
-
-                    if _parts[-1].isdigit(): #if the last part is digit, use it
-                        _digit = _parts[-1]
-
-                    if _nonDigitName == nonDigitName:
-                        if int(_digit) < min_Frame:
-                            min_Frame = int(digit)
-                            digitCount = len(_digit)
-
-                        if int(_digit)>= max_Frame:
-                            max_Frame = int(_digit)
-                        
-            ud.SetUserDataValue(op, "First Frame", int(min_Frame))
-            ud.SetUserDataValue(op, "Last Frame", int(max_Frame))
-
-        if Frame <= -1:
-            formatted_frame = ConstructFrame()
-        else:
-            formatted_frame = ConstructFrame(Frame)
-
-        if formatted_frame != -1:
-            Path = os.path.join(directory, nonDigitName + formatted_frame + extension )
-            msg = ">>> File: ' " +  nonDigitName + formatted_frame + extension + " ' succesfully located."
-            ud.SetUserDataValue(op,"File Handling Message", msg)
-            return Path
-        else:
-            return -1
-    else:
+    if not isfile(filename):
         msg = ">>> Invalid FileType. Please provide a link to an .obj file, not to a folder."
-        ud.SetUserDataValue(op,"File Handling Message", msg)
+        ud.SetUserDataValue(op, "File Handling Message", msg)
         return
 
-# ====================== CURRENT FRAME MANIPULATOR FUNCTIONS ================ #
+    if not splitext(filename)[1] == ".obj":
+        msg = ">>> Invalid FileType. Please provide an .obj file."
+        ud.SetUserDataValue(op, "File Handling Message", msg)
+        return
+
+    directory, fullname, name, extension = SplitPath(filename)
+    parts = filter(None, re.split(r'(\d+)', name))  # Split the digit and non-digit parts of the name
+
+    if parts[-1].isdigit(): #if the last part is digit, use it
+        digit = parts[-1]
+    else:
+        msg = ">>> Invalid Naming Convention. Please make sure that no other characters exist after your file numbering."
+        ud.SetUserDataValue(op, "File Handling Message", msg)
+        return
+
+    # ------------------------------------------------------------------------------------------------------------------
+    # RESET RUN COUNT ON FILE CHANGE -----------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
+    if not runcount == 0:
+        if not prev_filename == filename:
+            runcount = 0
+
+    if len(parts[:-1])>1:
+        nonDigitName = " ".join(parts[:-1]).replace(" ", "")
+    else:
+        nonDigitName = parts[0]
+
+    if runcount == 0:
+        files = GetFiles(directory, ".obj")
+
+        _digit = 0
+
+        for f in files:
+
+            _d, _f, _n, _e = SplitPath(f)
+
+            _parts = filter(None, re.split(r'(\d+)', _n)) # Split the digit and non-digit parts of the name
+
+            if len(_parts[:-1]) > 1:
+                _nonDigitName = " ".join(_parts[:-1]).replace(" ","")
+            else:
+                _nonDigitName = _parts[0]
+
+            if _parts[-1].isdigit(): #if the last part is digit, use it
+                _digit = _parts[-1]
+
+            if _nonDigitName == nonDigitName:
+                if int(_digit) < min_Frame:
+                    min_Frame = int(digit)
+                    digitCount = len(_digit)
+
+                if int(_digit) >= max_Frame:
+                    max_Frame = int(_digit)
+
+        ud.SetUserDataValue(op, "First Frame", int(min_Frame))
+        ud.SetUserDataValue(op, "Last Frame", int(max_Frame))
+
+    if Frame <= -1:
+        formatted_frame = ConstructFrame()
+    else:
+        formatted_frame = ConstructFrame(Frame)
+
+    if formatted_frame != -1:
+        Path = os.path.join(directory, nonDigitName + formatted_frame + extension )
+        msg = ">>> File: ' " +  nonDigitName + formatted_frame + extension + " ' succesfully located."
+        ud.SetUserDataValue(op,"File Handling Message", msg)
+        return Path
+    else:
+        return -1
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# CURRENT FRAME MANIPULATOR FUNCTIONS ----------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 def ConstructFrame(Frame = -1):
 
     """
@@ -247,7 +293,7 @@ def ConstructFrame(Frame = -1):
 
         frame = doc.GetTime().GetFrame(doc.GetFps()) + offset
 
-        if frame%step != 0:
+        if frame % step != 0:
             frame = frame - (frame%step) #Frame skipping
         
         if after == 0:
@@ -273,7 +319,14 @@ def ConstructFrame(Frame = -1):
 
     return formatted_frame
 
-# ====================== UTILITY FUNCTIONS FOR MANIPULATING NORMAL TAG ====== #
+
+def ConstructFrameRange(min_frame = 0, max_frame = 90):
+    pass
+
+# ----------------------------------------------------------------------------------------------------------------------
+# UTILITY FUNCTIONS FOR MANIPULATING NORMAL TAG ------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 # Obtained From: http://www.plugincafe.com/forum/forum_posts.asp?TID=9752&PID=38672#38672
 def float2bytes(f):
     int_value = int(math.fabs(f * 32000.0))
@@ -303,7 +356,7 @@ def set_normals(normal_tag,polygon,normal_a,normal_b,normal_c,normal_d):
             normal_buffer[normal_tag.GetDataSize()*polygon+v*vector_size+c*component_size+0] = chr(low_byte)
             normal_buffer[normal_tag.GetDataSize()*polygon+v*vector_size+c*component_size+1] = chr(high_byte)
 
-# ====================== OBJ PARSING CORE CODE ============================== #
+
 def ParseObj(filename, swapyz=False, flipz= False , scale = 1.0):
     """
     Loads an OBJ file from disk.
@@ -414,7 +467,17 @@ def ImportToCinema(PATH):
             N = os.path.basename(PATH)
             
             FaceUV = []
-            Vertices, Faces, Colors, VertexNormals, VertexUV, FaceNormals, FaceUV = ParseObj(PATH, ud.GetUserDataValue(op, "Swap Y/Z"), ud.GetUserDataValue(op, "Flip Z"), ud.GetUserDataValue(op, "Scale") ) #LOAD OBJ FILE
+            # LOAD OBJ FILE
+            Vertices,       \
+            Faces,          \
+            Colors,         \
+            VertexNormals,  \
+            VertexUV,       \
+            FaceNormals,    \
+            FaceUV = OBJ.ParseObj(PATH,
+                                  ud.GetUserDataValue(op, "Swap Y/Z"),
+                                  ud.GetUserDataValue(op, "Flip Z"),
+                                  ud.GetUserDataValue(op, "Scale"))
             
             ud.SetUserDataValue(op, "Vertices", str(len(Vertices)))
             ud.SetUserDataValue(op, "Colors", str(len(Colors)))

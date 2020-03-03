@@ -8,7 +8,7 @@ Topics covered so far:
   - [Material and Shader Creation](https://github.com/GeorgeAdamon/pyc4d_helpers/tree/master/scripts/pyc4d_helpers)
   - [Hierarchy Navigation (Selecting, Deselecting, Selecting Children etc)](https://github.com/GeorgeAdamon/pyc4d_helpers/tree/master/scripts/pyc4d_helpers)
   - [OBJ Sequential / Batch Importing](https://github.com/GeorgeAdamon/pyc4d_helpers/tree/master/scripts/ObjSequenceReader)
-  - [Importing Transformation Matrices From Other Software](https://github.com/GeorgeAdamon/pyc4d_helpers/tree/master/scripts/RhinoMatrixLoader)
+  - [Importing Transformation Matrices From Other Software](https://github.com/GeorgeAdamon/pyc4d_helpers/tree/master/src/standalone_scripts/RhinoMatrixLoader)
 
 ### Installation Notes
 In order to be able to use the pyc4d_helpers functions inside Cinema4D, you need to Copy / Paste the **pyc4d_helpers** folder in: 
